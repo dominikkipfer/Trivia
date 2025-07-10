@@ -1,0 +1,38 @@
+{
+  "name": "Trivia",
+  "description": "Questions and answers on various topics. Try to answer as many questions as possible.",
+  "icon": "assets/trivia.svg",
+  "init": "setTriviaScenario('trivia-list')",
+  "id": "trivia",
+  "cssFile": "resources/trivia.css",
+  "scripts": [
+    "src/trivia.js",
+    "src/trivia_ui.js"
+  ],
+  "htmlFile": "resources/trivia.html",
+  "scenario": {
+    "trivia-list": {
+      "menu": {
+        "Settings": "menu_settings",
+        "About": "menu_about"
+      },
+      "display": [
+        "div:back",
+        "core",
+        "div:trivia-list",
+        "plus"
+      ]
+    },
+    "trivia-board": {
+      "menu": {
+        "Settings": "menu_settings",
+        "About": "menu_about"
+      },
+      "display": [
+        "div:back",
+        "core",
+        "div:trivia-board"
+      ]
+    }
+  }
+}

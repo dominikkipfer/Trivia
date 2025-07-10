@@ -1,0 +1,7 @@
+{
+  "name": "Kanban Boards",
+  "description": "A visual project management tool to organize tasks.",
+  "icon": "assets/kanban.svg",
+  "init": "console.log('Kanban not ready!')",
+  "id": "kanban"
+}

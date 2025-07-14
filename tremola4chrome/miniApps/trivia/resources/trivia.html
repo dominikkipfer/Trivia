@@ -1,13 +1,79 @@
-<div id='div:trivia-list' style='display: none; text-align: center;'></div>
-<div id='div:trivia-board' style='display: none; text-align: center;'>
-    <div id='trivia_title' style='margin-bottom: 15px;'>
-        Some text
+<div id="div:trivia-list" style="display: none; text-align: center;">
+    <div id="trivia_tabs" class="trivia_tabs_bottom spotlight" style="display: flex; justify-content: center; margin-bottom: 10px;">
+        <button id="tab_solving" onclick="showTriviaTab('solvable')" class="trivia_tab_active">
+            <div class="trivia_tab_content spotlight">
+                <img src="../miniApps/trivia/assets/open.svg" class="trivia_tab_icon" id="icon_solving" />
+                <span class="trivia_tab_label">Solve Quizzes</span>
+            </div>
+        </button>
+        <button id="tab_create" onclick="showTriviaTab('created')">
+            <div class="trivia_tab_content spotlight">
+                <img src="../miniApps/trivia/assets/created.svg" class="trivia_tab_icon" id="icon_create" />
+                <span class="trivia_tab_label">Create Quizzes</span>
+            </div>
+        </button>
+        <button id="tab_leaderboard" onclick="showTriviaTab('leaderboard')">
+            <div class="trivia_tab_content spotlight">
+                <img src="../miniApps/trivia/assets/leaderboard.svg" class="trivia_tab_icon" id="icon_leaderboard" />
+                <span class="trivia_tab_label">Leaderboard</span>
+            </div>
+        </button>
     </div>
-    <div class='trivia_table' id='trivia_table'>
-        <!-- div class='ttt_cell' id='ttt0' onclick="ttt_cellclick(id)"><img src='games/tictactoe/dot.svg' width=100%></div -->
+    <div id="trivia_solving_list" class="trivia_list"></div>
+    <div id="trivia_created_list" class="trivia_list" style="display: none;">
+        <div id="trivia_created_quizzes"></div>
+        <button class="trivia_button trivia_plus_button spotlight" onclick="trivia_new_quiz()">+</button>
+        <button class="trivia_button trivia_edit_button spotlight" onclick="">Edit</button>
     </div>
-    <div id='trivia_footer' style='margin: 15px;'>
-        <button style='height: 30px;' onclick='trivia_give_up()'>give up</button>
-        <button style='height: 30px;' onclick='trivia_walk_away()'>walk away</button>
+    <div id="trivia_leaderboard_list" style="display: none;"></div>
+</div>
+<div id="div:trivia-create" style="display: none; padding: 20px;">
+    <button class="trivia_button trivia_plus_button spotlight" onclick="cancelQuizCreation()">
+        <img src="../miniApps/trivia/assets/x.svg" class="trivia_button_icon" alt="X" />
+    </button>
+    <div class="trivia_create_form">
+
+        <div class="form_group">
+            <label for="quiz_title">Quiz-Title:</label>
+            <input type="text" id="quiz_title" class="form_input" placeholder="Add a title for your quiz" />
+        </div>
+
+        <div class="form_group">
+            <label for="quiz_description">Description:</label>
+            <textarea id="quiz_description" class="form_textarea" placeholder="Add a description for your quiz"></textarea>
+        </div>
+
+        <div id="questions_container">
+            <div class="question_item">
+                <div class="form_group">
+                    <label>Question 1:</label>
+                    <input type="text" class="question_text form_input" placeholder="Add your question here" />
+                </div>
+
+                <div class="answers_container">
+                    <div class="form_group">
+                        <input type="text" class="answer_text form_input" placeholder="Answer A">
+                        <input type="radio" name="correct_1" value="0" checked>
+                    </div>
+                    <div class="form_group">
+                        <input type="text" class="answer_text form_input" placeholder="Answer B">
+                        <input type="radio" name="correct_1" value="1">
+                    </div>
+                    <div class="form_group">
+                        <input type="text" class="answer_text form_input" placeholder="Answer C">
+                        <input type="radio" name="correct_1" value="2">
+                    </div>
+                    <div class="form_group">
+                        <input type="text" class="answer_text form_input" placeholder="Answer D">
+                        <input type="radio" name="correct_1" value="3">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button_group">
+            <button class="trivia_button spotlight" onclick="addQuizQuestion()">Add question</button>
+            <button class="trivia_button spotlight" onclick="saveQuiz()">Save</button>
+        </div>
     </div>
 </div>

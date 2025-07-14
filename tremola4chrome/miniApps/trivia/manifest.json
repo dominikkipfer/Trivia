@@ -19,11 +19,10 @@
       "display": [
         "div:back",
         "core",
-        "div:trivia-list",
-        "plus"
+        "div:trivia-list"
       ]
     },
-    "trivia-board": {
+    "trivia-create": {
       "menu": {
         "Settings": "menu_settings",
         "About": "menu_about"
@@ -31,7 +30,7 @@
       "display": [
         "div:back",
         "core",
-        "div:trivia-board"
+        "div:trivia-create"
       ]
     }
   }

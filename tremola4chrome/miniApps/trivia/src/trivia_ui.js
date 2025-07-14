@@ -1,13 +1,14 @@
 "use strict";
 
-var TriviaScenario = null;
+let TriviaScenario = null;
 
 function setTriviaScenario(s) {
+    let c;
     console.log("setTriviaScenario", s);
 
     console.log("scenarioDisplay", scenarioDisplay);
 
-    var lst = scenarioDisplay[s];
+    const lst = scenarioDisplay[s];
     console.log("scenarioDisplay", lst);
     load_board_list();
 
@@ -27,22 +28,22 @@ function setTriviaScenario(s) {
 
     TriviaScenario = s;
 
-    if (s == 'trivia-list') {
+    if (s === 'trivia-list') {
         document.getElementById("tremolaTitle").style.display = 'none';
-        var c = document.getElementById("conversationTitle");
+        c = document.getElementById("conversationTitle");
         c.style.display = null;
-        c.innerHTML = "<font size=+1><strong>Trivia</strong><br>Pick or create a new game</font>";
-        trivia_load_list();
-    }
-    if (s == 'trivia-board') {
-        document.getElementById("tremolaTitle").style.display = 'none';
-        var c = document.getElementById("conversationTitle");
-        c.style.display = null;
-        let fed = tremola.trivia.active[tremola.trivia.current].peer
-        c.innerHTML = `<font size=+1><strong>Trivia with ${fid2display(fed)}</strong></font>`;
+        c.innerHTML = "<font size=+1><strong>Trivia</strong><br>Pick or create a new quiz</font>";
+        renderTriviaLists();
     }
 }
 
+let trivia_buttons = document.querySelectorAll('.spotlight');
+trivia_buttons.forEach(trivia_button => {
+    trivia_button.onmousemove = function (e) {
+        let x = e.pageX - trivia_button.offsetLeft;
+        trivia_button.style.setProperty('--x', x + 'px');
 
-function load_board_list() {
-}
+        let y = e.pageY - trivia_button.offsetTop;
+        trivia_button.style.setProperty('--y', y + 'px');
+    }
+})

@@ -29,23 +29,21 @@
     </div>
     <div id="trivia_leaderboard_list" style="display: none;"></div>
 </div>
-<div id="div:trivia-create" style="display: none; padding: 20px;">
+<div id="div:trivia-create" style="display: none;">
     <button class="trivia_button spotlight" style="left: 15px; width: 40px" onclick="cancelQuizCreation()">
         <img src="../miniApps/trivia/assets/x.svg" class="trivia_button_icon" alt="X" />
     </button>
     <button class="trivia_button spotlight" style="right: 15px; width: 40px" onclick="saveQuiz()">
         <img src="../miniApps/trivia/assets/done.svg" class="trivia_button_icon" alt="Done" />
     </button>
+    <h2 class="trivia_create_title">Create Quiz</h2>
     <div class="trivia_create_form">
-
         <div class="form_group">
-            <label for="quiz_title">Quiz-Title:</label>
-            <input type="text" id="quiz_title" class="form_input" placeholder="Add a title for your quiz" />
+            <input type="text" id="quiz_title" class="form_input" placeholder="Title" />
         </div>
 
         <div class="form_group">
-            <label for="quiz_description">Description:</label>
-            <textarea id="quiz_description" class="form_textarea" placeholder="Add a description for your quiz"></textarea>
+            <textarea id="quiz_description" class="form_textarea" placeholder="Description"></textarea>
         </div>
 
         <div id="questions_container">

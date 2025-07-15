@@ -79,8 +79,6 @@ function showQuizCreationForm() {
 
     document.getElementById("tremolaTitle").style.display = 'none';
     let c = document.getElementById("conversationTitle");
-    c.style.display = null;
-    c.innerHTML = "<font size=+1><strong>Trivia</strong><br>Create a new quiz</font>";
 
     document.getElementById('quiz_title').value = '';
     document.getElementById('quiz_description').value = '';

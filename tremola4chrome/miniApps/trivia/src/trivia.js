@@ -84,33 +84,7 @@ function showQuizCreationForm() {
 
     document.getElementById('quiz_title').value = '';
     document.getElementById('quiz_description').value = '';
-    document.getElementById('questions_container').innerHTML = `
-    <div class="question_item">
-      <div class="form_group">
-        <label>Question 1:</label>
-        <input type="text" class="question_text form_input" placeholder="Type your question here">
-      </div>
-      
-      <div class="answers_container">
-        <div class="form_group">
-          <input type="text" class="answer_text form_input" placeholder="Answer A">
-          <input type="radio" name="correct_1" value="0" checked>
-        </div>
-        <div class="form_group">
-          <input type="text" class="answer_text form_input" placeholder="Answer B">
-          <input type="radio" name="correct_1" value="1">
-        </div>
-        <div class="form_group">
-          <input type="text" class="answer_text form_input" placeholder="Answer C">
-          <input type="radio" name="correct_1" value="2">
-        </div>
-        <div class="form_group">
-          <input type="text" class="answer_text form_input" placeholder="Answer D">
-          <input type="radio" name="correct_1" value="3">
-        </div>
-      </div>
-    </div>
-  `;
+    document.getElementById('questions_container').innerHTML = ``;
 }
 
 function addQuizQuestion() {

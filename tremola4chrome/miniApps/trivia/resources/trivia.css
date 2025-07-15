@@ -121,12 +121,6 @@
     filter: brightness(0);
 }
 
-.trivia_plus_button {
-    right: 15px;
-    width: 40px;
-    font-size: 28px;
-}
-
 .trivia_edit_button {
     left: 15px;
     padding: 6px 12px;
@@ -154,7 +148,7 @@
 
 .form_group label {
     display: block;
-    margin-bottom: 5px;
+    margin: 0 5px 5px;
     font-weight: bold;
 }
 
@@ -174,15 +168,15 @@
 }
 
 .question_item {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255);
     border-radius: 30px;
-    padding: 15px;
-    margin-bottom: 20px;
+    padding: 10px;
+    margin-bottom: 10px;
     border: 1px solid #eee;
 }
 
 .answers_container {
-    margin: 25px 5px;
+    margin: 25px 10px 0 0;
 }
 
 .answers_container .form_group {
@@ -204,7 +198,7 @@
     position: relative;
     top: initial;
     width: auto;
-    padding: 0 15px;
+    padding: 0 10px;
     background: rgba(255, 255, 255, 0.6);
     border: 1px solid rgba(0, 0, 0, 0.1);
 }

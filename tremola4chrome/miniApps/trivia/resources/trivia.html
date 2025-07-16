@@ -22,18 +22,28 @@
     <div id="trivia_solving_list" class="trivia_list"></div>
     <div id="trivia_created_list" class="trivia_list" style="display: none;">
         <div id="trivia_created_quizzes"></div>
-        <button class="trivia_button spotlight" style="right: 15px; width: 40px" onclick="trivia_new_quiz()">
+        <button class="trivia_button spotlight" style="right: 15px; width: 40px; top: 63pt;" onclick="trivia_new_quiz()">
             <img src="../miniApps/trivia/assets/plus.svg" class="trivia_button_icon" alt="+" />
         </button>
         <button class="trivia_button trivia_edit_button spotlight" onclick="">Edit</button>
     </div>
     <div id="trivia_leaderboard_list" style="display: none;"></div>
 </div>
-<div id="div:trivia-create" style="display: none;">
-    <button class="trivia_button spotlight" style="left: 15px; width: 40px" onclick="cancelQuizCreation()">
+<div id="div:trivia-solve" style="display: none;">
+    <h2 id="solve_quiz_title" class="trivia_create_title"></h2>
+    <div id="solve_quiz_container" class="trivia_create_form"></div>
+    <button class="trivia_button spotlight" style="left: 15px; width: 40px; top: 63pt;" onclick="cancel_quiz()">
         <img src="../miniApps/trivia/assets/x.svg" class="trivia_button_icon" alt="X" />
     </button>
-    <button class="trivia_button spotlight" style="right: 15px; width: 40px" onclick="saveQuiz()">
+    <button class="trivia_button spotlight" style="right: 15px; width: 40px; top: 63pt;" onclick="submit_quiz()">
+        <img src="../miniApps/trivia/assets/done.svg" class="trivia_button_icon" alt="Done" />
+    </button>
+</div>
+<div id="div:trivia-create" style="display: none;">
+    <button class="trivia_button spotlight" style="left: 15px; width: 40px; top: 63pt;" onclick="cancelQuizCreation()">
+        <img src="../miniApps/trivia/assets/x.svg" class="trivia_button_icon" alt="X" />
+    </button>
+    <button class="trivia_button spotlight" style="right: 15px; width: 40px; top: 63pt;" onclick="saveQuiz()">
         <img src="../miniApps/trivia/assets/done.svg" class="trivia_button_icon" alt="Done" />
     </button>
     <h2 class="trivia_create_title">Create Quiz</h2>
@@ -44,6 +54,14 @@
 
         <div class="form_group">
             <textarea id="quiz_description" class="form_textarea" placeholder="Description"></textarea>
+        </div>
+
+        <div class="form_group">
+            <div id="quiz_contacts_container" class="contacts_container">
+                <button type="button" id="add_contact_btn" class="trivia_button spotlight" style="width: 40px;" onclick="add_contacts()">
+                    <img src="../miniApps/trivia/assets/addcontact.svg" class="trivia_button_icon" alt="+" />
+                </button>
+            </div>
         </div>
 
         <div id="questions_container">

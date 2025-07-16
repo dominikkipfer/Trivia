@@ -32,6 +32,17 @@
         "core",
         "div:trivia-create"
       ]
+    },
+    "trivia-solve": {
+      "menu": {
+        "Settings": "menu_settings",
+        "About": "menu_about"
+      },
+      "display": [
+        "div:back",
+        "core",
+        "div:trivia-solve"
+      ]
     }
   }
 }

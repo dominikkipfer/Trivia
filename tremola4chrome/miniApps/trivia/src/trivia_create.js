@@ -29,14 +29,29 @@ function addQuizQuestion() {
     questionDiv.className = 'question_item';
     questionDiv.innerHTML = `
         <div class="form_group">
-            <label style="display: block; text-align: center;">Question ${questionCount}</label>
+            <div class="question_header">
+                <div class="question_header_left">
+                    <button class="trivia_button spotlight" style="width: 40px;" onclick="toggleQuestion(this)">
+                        <img src="../miniApps/trivia/assets/arrow-down.svg" class="trivia_button_icon" alt="v" />
+                    </button>
+                    <button class="trivia_button spotlight" style="width: 40px;" onclick="deleteQuestion(this)">
+                        <img src="../miniApps/trivia/assets/x.svg" class="trivia_button_icon" alt="X" />
+                    </button>
+                </div>
+                <label class="question_label">Question ${questionCount}</label>
+                <div class="question_header_right">
+                    <button type="button" class="reorder_answer">
+                        <img src="../miniApps/trivia/assets/threelines.svg" class="trivia_button_icon" style="filter: invert(75%);"/>
+                    </button>
+                </div>
+            </div>
             <input type="text" class="question_text form_input" placeholder="Type your question here">
         </div>
         <div class="form_group">
             <div class="question_type_tabs">
-              <button class="question_type_tab question_type_tab_active" data-type="single_choice">Single Choice</button>
-              <button class="question_type_tab" data-type="multiple_choice">Multiple Choice</button>
-              <button class="question_type_tab" data-type="open_ended">Open Ended</button>
+                <button class="question_type_tab question_type_tab_active" data-type="single_choice">Single Choice</button>
+                <button class="question_type_tab" data-type="multiple_choice">Multiple Choice</button>
+                <button class="question_type_tab" data-type="open_ended">Open Ended</button>
             </div>
         </div>
         <div class="question_details"></div>
@@ -68,6 +83,51 @@ function addQuizQuestion() {
 
     questionsContainer.appendChild(questionDiv);
     attachAnswerManagementListeners(detailsDiv, questionCount, 'single_choice');
+}
+
+function toggleQuestion(button) {
+    const questionItem = button.closest('.question_item');
+    const questionText = questionItem.querySelector('.question_text');
+    const typeTabsGroup = questionItem.querySelector('.question_type_tabs').closest('.form_group');
+    const detailsDiv = questionItem.querySelector('.question_details');
+    const arrowIcon = button.querySelector('img');
+
+    const isVisible = typeTabsGroup.style.display !== 'none';
+
+    [questionText, typeTabsGroup, detailsDiv].forEach(el => {
+        if (el) el.style.display = isVisible ? 'none' : 'block';
+    });
+
+    arrowIcon.style.transform = isVisible ? 'rotate(180deg)' : 'rotate(0deg)';
+    arrowIcon.style.transition = 'transform 0.3s';
+
+    if (!isVisible) {
+        setTimeout(() => {
+            const tabs = questionItem.querySelectorAll('.question_type_tab');
+            tabs.forEach(tab => {
+                tab.style.flex = '1 1 33%';
+            });
+        }, 10);
+    }
+
+    questionItem.style.padding = isVisible ? '10px 10px' : '10px 10px 20px 10px';
+}
+
+function deleteQuestion(button) {
+    const questionItem = button.closest('.question_item');
+    if (!questionItem) return;
+    questionItem.remove();
+    updateQuestionLabels();
+}
+
+function updateQuestionLabels() {
+    const questionItems = document.querySelectorAll('.question_item');
+    questionItems.forEach((item, index) => {
+        const label = item.querySelector('.question_label');
+        if (label) {
+            label.textContent = `Question ${index + 1}`;
+        }
+    });
 }
 
 function getExistingAnswers(detailsDiv) {

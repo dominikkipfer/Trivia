@@ -7,6 +7,8 @@
   "cssFile": "resources/trivia.css",
   "scripts": [
     "src/trivia.js",
+    "src/trivia_create.js",
+    "src/trivia_solve.js",
     "src/trivia_ui.js"
   ],
   "htmlFile": "resources/trivia.html",

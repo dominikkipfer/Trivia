@@ -1,49 +1,66 @@
-"use strict";
-
 let TriviaScenario = null;
 
-function setTriviaScenario(s) {
-    let c;
-    console.log("setTriviaScenario", s);
-
-    console.log("scenarioDisplay", scenarioDisplay);
-
-    const lst = scenarioDisplay[s];
-    console.log("scenarioDisplay", lst);
-    load_board_list();
-
-    display_or_not.forEach(function (d) {
-        console.log(d);
-        let element = document.getElementById(d);
-        if (element) {
-            if (lst.indexOf(d) < 0) {
-                element.style.display = 'none';
-            } else {
-                element.style.display = null;
-            }
-        } else {
-            console.warn(`Element with ID '${d}' not found.`);
+const TriviaUi = {
+    onBackPressed() {
+        if (TriviaScenario === 'trivia-create' || TriviaScenario === 'trivia-solve') {
+            setTriviaScenario('trivia-list');
+        } else if (TriviaScenario === 'trivia-list') {
+            quitApp();
         }
-    });
+    },
+    refresh() {
+        TriviaUi.renderLists();
+    },
+    renderLists() {
+        if (!tremola.trivia) tremola.trivia = { active: {}, closed: {} };
 
+        const todo = Object.values(tremola.trivia.active).filter(q => q.state !== 'solved');
+        const own  = Object.values(tremola.trivia.active).filter(q => q.isOwn);
+
+        const render = (arr, html) => html.length ? html.join('') :
+            '<p style="text-align:center;color:#666;">Nothing here.</p>';
+
+        document.getElementById('trivia_solving_list').innerHTML = render(todo,
+            todo.map(q =>
+                `<button class='trivia_list_button' style='width:90%;' onclick="TriviaSolve.load('${q.nm}')">
+                    Quiz: ${q.quiz.title || 'No Title'}<br><font size=-1>from ${fid2display(q.from)}</font>
+                </button>`));
+
+        document.getElementById('trivia_created_quizzes').innerHTML = render(own,
+            own.map(q => `<div class='chat_item_div'>Quiz: ${q.quiz.title || 'No Title'}</div>`));
+    }
+};
+
+function setTriviaScenario(s) {
     TriviaScenario = s;
-
+    scenarioDisplay[s].forEach(id => document.getElementById(id).style.display = null);
+    display_or_not.forEach(id => {
+        if (!scenarioDisplay[s].includes(id)) document.getElementById(id).style.display = 'none';
+    });
     if (s === 'trivia-list') {
         document.getElementById("tremolaTitle").style.display = 'none';
-        c = document.getElementById("conversationTitle");
+        const c = document.getElementById("conversationTitle");
         c.style.display = null;
-        c.innerHTML = "<font size=+1><strong>Trivia</strong><br>Pick or create a new quiz</font>";
-        renderTriviaLists();
+        c.innerHTML = "<strong>Trivia</strong><br>Pick or create a new quiz";
+        TriviaUi.refresh();
     }
 }
 
-let trivia_buttons = document.querySelectorAll('.spotlight');
-trivia_buttons.forEach(trivia_button => {
-    trivia_button.onmousemove = function (e) {
-        let x = e.pageX - trivia_button.offsetLeft;
-        trivia_button.style.setProperty('--x', x + 'px');
+function showTriviaTab(tab) {
+    document.getElementById('trivia_solving_list').style.display = (tab === 'solvable') ? '' : 'none';
+    document.getElementById('trivia_created_list').style.display = (tab === 'created') ? '' : 'none';
+    document.getElementById('trivia_leaderboard_list').style.display = (tab === 'leaderboard') ? '' : 'none';
 
-        let y = e.pageY - trivia_button.offsetTop;
-        trivia_button.style.setProperty('--y', y + 'px');
-    }
-})
+    document.getElementById('tab_solving').classList.toggle('trivia_tab_active', tab === 'solvable');
+    document.getElementById('tab_create').classList.toggle('trivia_tab_active', tab === 'created');
+    document.getElementById('tab_leaderboard').classList.toggle('trivia_tab_active', tab === 'leaderboard');
+
+    document.getElementById('trivia_created_list').classList.toggle('active', tab === 'created');
+}
+
+document.querySelectorAll('.spotlight').forEach(btn => {
+    btn.onmousemove = e => {
+        btn.style.setProperty('--x', (e.pageX - btn.offsetLeft) + 'px');
+        btn.style.setProperty('--y', (e.pageY - btn.offsetTop) + 'px');
+    };
+});

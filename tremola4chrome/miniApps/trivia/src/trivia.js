@@ -125,26 +125,22 @@ function addQuizQuestion() {
 
     const typeTabs = questionDiv.querySelectorAll('.question_type_tab');
     typeTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            typeTabs.forEach(tab => {
-                tab.addEventListener('click', function () {
-                    typeTabs.forEach(t => t.classList.remove('question_type_tab_active'));
-                    this.classList.add('question_type_tab_active');
+        tab.addEventListener('click', function () {
+            typeTabs.forEach(t => t.classList.remove('question_type_tab_active'));
+            this.classList.add('question_type_tab_active');
 
-                    const type = this.dataset.type;
-                    const questionItem = this.closest('.question_item');
-                    const detailsDiv = questionItem.querySelector('.question_details');
-                    const existingAnswers = getExistingAnswers(detailsDiv);
+            const type = this.dataset.type;
+            const questionItem = this.closest('.question_item');
+            const detailsDiv = questionItem.querySelector('.question_details');
+            const existingAnswers = getExistingAnswers(detailsDiv);
 
-                    if (type === 'single_choice' || type === 'multiple_choice') {
-                        detailsDiv.innerHTML = generateChoiceDetails(type, questionCount, existingAnswers);
-                        attachAnswerManagementListeners(detailsDiv, questionCount, type);
-                    } else if (type === 'open_ended') {
-                        detailsDiv.innerHTML = generateOpenEndedDetails(questionCount, existingAnswers);
-                        attachOpenEndedListeners(detailsDiv, questionCount);
-                    }
-                });
-            });
+            if (type === 'single_choice' || type === 'multiple_choice') {
+                detailsDiv.innerHTML = generateChoiceDetails(type, questionCount, existingAnswers);
+                attachAnswerManagementListeners(detailsDiv, questionCount, type);
+            } else if (type === 'open_ended') {
+                detailsDiv.innerHTML = generateOpenEndedDetails(questionCount, existingAnswers);
+                attachOpenEndedListeners(detailsDiv, questionCount);
+            }
         });
     });
 

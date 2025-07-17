@@ -28,11 +28,11 @@ globalWindow.miniApps["trivia"] = {
 
 const TriviaLogic = {
     onIncoming(raw) {
-        let msgs = Array.isArray(raw) ? raw : JSON.parse(raw.content || raw);
-        if (!Array.isArray(msgs)) return;
+        let messages = Array.isArray(raw) ? raw : JSON.parse(raw.content || raw);
+        if (!Array.isArray(messages)) return;
 
         if (!tremola.trivia) tremola.trivia = { active: {}, closed: {} };
-        msgs.forEach(msg => {
+        messages.forEach(msg => {
             if (!msg?.type || !msg.quiz) return;
             tremola.trivia.active[msg.quiz.nm] = {
                 nm: msg.quiz.nm,

@@ -86,7 +86,7 @@ function addQuizQuestion() {
                 attachAnswerManagementListeners(detailsDiv, questionCount, type);
             } else if (type === 'open_ended') {
                 detailsDiv.innerHTML = generateOpenEndedDetails(questionCount, existingAnswers);
-                attachOpenEndedListeners(detailsDiv, questionCount);
+                attachOpenEndedListeners(detailsDiv);
             }
         });
     });
@@ -233,9 +233,9 @@ function generateOpenEndedDetails(questionCount, existingAnswers = []) {
 `;
 }
 
-function attachOpenEndedListeners(detailsDiv, questionCount) {
-    const addAnswerBtn = detailsDiv.querySelector('.add_answer');
-    addAnswerBtn.addEventListener('click', function() {
+function attachOpenEndedListeners(detailsDiv) {
+    const addAnswerButton = detailsDiv.querySelector('.add_answer');
+    addAnswerButton.addEventListener('click', function() {
         const container = detailsDiv.querySelector('.correct_answers_container');
         const newAnswerDiv = document.createElement('div');
         newAnswerDiv.className = 'form_group answer_group';
@@ -245,16 +245,16 @@ function attachOpenEndedListeners(detailsDiv, questionCount) {
             </button>
             <input type="text" class="correct_answer form_input" placeholder="Correct Answer">
         `;
-        container.insertBefore(newAnswerDiv, addAnswerBtn);
-        const removeBtn = newAnswerDiv.querySelector('.remove_answer');
-        removeBtn.addEventListener('click', function() {
+        container.insertBefore(newAnswerDiv, addAnswerButton);
+        const removeButton = newAnswerDiv.querySelector('.remove_answer');
+        removeButton.addEventListener('click', function() {
             container.removeChild(newAnswerDiv);
         });
     });
 
-    const removeBtns = detailsDiv.querySelectorAll('.remove_answer');
-    removeBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
+    const removeButtons = detailsDiv.querySelectorAll('.remove_answer');
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
             const answerDiv = this.closest('.form_group');
             answerDiv.parentNode.removeChild(answerDiv);
         });
@@ -263,7 +263,7 @@ function attachOpenEndedListeners(detailsDiv, questionCount) {
 
 function attachAnswerManagementListeners(detailsDiv, questionCount, type) {
     const answersContainer = detailsDiv.querySelector('.answers_container');
-    const addAnswerBtn = answersContainer.querySelector('.add_answer');
+    const addAnswerButton = answersContainer.querySelector('.add_answer');
 
     attachDragAndDropListeners(
         answersContainer,
@@ -271,7 +271,7 @@ function attachAnswerManagementListeners(detailsDiv, questionCount, type) {
         (container) => updateAnswerIndices(container, questionCount, type)
     );
 
-    addAnswerBtn.addEventListener('click', function() {
+    addAnswerButton.addEventListener('click', function() {
         const numAnswers = answersContainer.querySelectorAll('.answer_group').length;
         const inputType = type === 'single_choice' ? 'radio' : 'checkbox';
         const nameAttr = type === 'single_choice' ? `name="correct_${questionCount}"` : '';
@@ -289,18 +289,18 @@ function attachAnswerManagementListeners(detailsDiv, questionCount, type) {
                 <img src="../miniApps/trivia/assets/threelines.svg" class="trivia_button_icon" style="filter: invert(75%);"/>
             </button>
         `;
-        answersContainer.insertBefore(newAnswerDiv, addAnswerBtn);
+        answersContainer.insertBefore(newAnswerDiv, addAnswerButton);
         attachRemoveAnswerListener(newAnswerDiv, questionCount, type);
         updateAnswerIndices(answersContainer, questionCount, type);
     });
 
-    const removeAnswerBtns = answersContainer.querySelectorAll('.remove_answer');
-    removeAnswerBtns.forEach(btn => attachRemoveAnswerListener(btn.parentNode, questionCount, type));
+    const removeAnswerButtons = answersContainer.querySelectorAll('.remove_answer');
+    removeAnswerButtons.forEach(button => attachRemoveAnswerListener(button.parentNode, questionCount, type));
 }
 
 function attachRemoveAnswerListener(answerDiv, questionCount, type) {
-    const removeBtn = answerDiv.querySelector('.remove_answer');
-    removeBtn.addEventListener('click', function() {
+    const removeButton = answerDiv.querySelector('.remove_answer');
+    removeButton.addEventListener('click', function() {
         const answersContainer = answerDiv.parentNode;
         if (answersContainer.querySelectorAll('.answer_group').length > 2) {
             answersContainer.removeChild(answerDiv);

@@ -25,17 +25,47 @@ const TriviaUi = {
         const todoSolved = allSolvable.filter(q => q.state === 'solved');
         const own = Object.values(tremola.trivia.active).filter(q => q.isOwn);
 
-        const renderSection = (arr, header) => {
+        const formatDate = (dateString) => {
+            if (!dateString) return 'Unbekanntes Datum';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('de-CH', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        };
+
+        const renderSection = (arr, header, isCreated = false) => {
             if (arr.length === 0) return '';
+
             return `
-            <div class="quiz_section">
-                <h3 class="section_header">${header}</h3>
-                ${arr.map(q =>
-                `<button class='trivia_list_button' style='width:90%;' onclick="TriviaSolve.load('${q.nm}')">
-                        Quiz: ${q.quiz.title || 'No Title'}<br><font size=-1>from ${fid2display(q.from)}</font>
-                    </button>`
-            ).join('')}
-            </div>
+                <div class="quiz_section">
+                    <h3 class="section_header">${header}</h3>
+                    ${arr.map(q => {
+                    const questions = q.quiz.questions || [];
+                    const createdDate = formatDate(q.quiz.created);
+    
+                    return `<button class="trivia_button trivia_list_button spotlight" onclick="${isCreated ? 'trivia_load_board' : 'TriviaSolve.load'}('${q.nm}')">
+                            <div class="quiz_item">
+                                <div class="quiz_title">${q.quiz.title || 'No Title'}</div>
+                                <div class="quiz_questions">
+                                    <span>${questions.length} Question</span>
+                                </div>
+                                <div class="quiz_info">
+                                    ${!isCreated ? `
+                                    <div class="author_info">
+                                        <img src="../miniApps/trivia/assets/author.svg" class="list_icon" alt="Author:" />
+                                        <span>${fid2display(q.from)}</span>
+                                    </div>` : ''}
+                                    <div class="date_info">
+                                        <span>${createdDate}</span>
+                                        <img src="../miniApps/trivia/assets/date.svg" class="list_icon" alt="Date:" />
+                                    </div>
+                                </div>
+                            </div>
+                        </button>`;
+                }).join('')}
+                </div>
             `;
         };
 
@@ -48,9 +78,7 @@ const TriviaUi = {
         document.getElementById('trivia_created_quizzes').innerHTML =
             own.length === 0
                 ? '<p style="text-align:center;color:#666;">No quizzes created.</p>'
-                : own.map(q =>
-                    `<div class='chat_item_div'>Quiz: ${q.quiz.title || 'No Title'}</div>`
-                ).join('');
+                : renderSection(own, 'Your Quizzes', true);
     }
 };
 

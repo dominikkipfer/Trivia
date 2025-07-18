@@ -5,16 +5,17 @@
 
 .trivia_list {
     display: block;
-    width: 100%;
     text-align: center;
+    align-items: center;
     background: transparent;
-    overflow-y: auto;
+    overflow-y: scroll;
     padding-bottom: 20px;
 }
 
 #trivia_solving_list, #trivia_created_list, #trivia_leaderboard_list {
-    overflow-y: auto;
-    padding: 10px;
+    padding: 10px 0 10px 10px;
+    margin-right: -5px;
+    max-height: 100%;
 }
 
 .trivia_tabs_bottom,
@@ -32,6 +33,7 @@
     right: 10%;
     margin: 0 auto;
     overflow: visible;
+    z-index: 99;
 }
 
 .question_type_tabs {
@@ -132,6 +134,77 @@
     left: 15px;
     padding: 6px 12px;
     font-size: 22px;
+}
+
+.trivia_list_button {
+    position: relative;
+    height: auto;
+    width: calc(100% - 10px);
+    min-height: 60px;
+    overflow: hidden;
+    margin: 0 5px 10px;
+    word-wrap: break-word;
+}
+
+.section_header {
+    font-size: 1em;
+    margin-bottom: 20px;
+}
+
+.quiz_title {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin-bottom: 5px;
+    color: #e2573b;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+.quiz_item {
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.quiz_questions {
+    background: #e2573b;
+    border-radius: 35px;
+    display: inline-block;
+    color: white;
+    padding: 5px 10px;
+    margin: 5px 0;
+    width: fit-content;
+}
+
+.quiz_info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+    color: #666;
+    width: 100%;
+}
+
+.author_info, .date_info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.list_icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+}
+
+.quiz_section {
+    margin-bottom: 110px;
 }
 
 .trivia_create_title {

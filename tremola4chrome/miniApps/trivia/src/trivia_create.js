@@ -1,8 +1,7 @@
 const TriviaCreate = {
     addQuestion() { addQuizQuestion(); },
     save() { saveQuiz(); },
-    cancel(){ setTriviaScenario('trivia-list'); },
-    onContactsConfirmed() { trivia_contacts_confirmed(); }
+    cancel(){ setTriviaScenario('trivia-list'); }
 };
 
 function showQuizCreationForm() {
@@ -11,6 +10,13 @@ function showQuizCreationForm() {
     document.getElementById('quiz_title').value = '';
     document.getElementById('quiz_description').value = '';
     document.getElementById('questions_container').innerHTML = '';
+
+    const questionsContainer = document.getElementById('questions_container');
+    attachDragAndDropListeners(
+        questionsContainer,
+        '.question_item',
+        updateQuestionLabels
+    );
 }
 
 function cancelQuizCreation() {
@@ -21,6 +27,10 @@ function trivia_new_quiz() {
     showQuizCreationForm();
 }
 
+function add_contacts() {
+    TriviaContacts.show();
+}
+
 function addQuizQuestion() {
     const questionsContainer = document.getElementById('questions_container');
     const questionCount = questionsContainer.getElementsByClassName('question_item').length + 1;
@@ -28,23 +38,23 @@ function addQuizQuestion() {
     const questionDiv = document.createElement('div');
     questionDiv.className = 'question_item';
     questionDiv.innerHTML = `
-        <div class="form_group">
-            <div class="question_header">
-                <div class="question_header_left">
-                    <button class="trivia_button spotlight" style="width: 40px;" onclick="toggleQuestion(this)">
-                        <img src="../miniApps/trivia/assets/arrow-down.svg" class="trivia_button_icon" alt="v" />
-                    </button>
-                    <button class="trivia_button spotlight" style="width: 40px;" onclick="deleteQuestion(this)">
-                        <img src="../miniApps/trivia/assets/x.svg" class="trivia_button_icon" alt="X" />
-                    </button>
-                </div>
-                <label class="question_label">Question ${questionCount}</label>
-                <div class="question_header_right">
-                    <button type="button" class="reorder_answer">
-                        <img src="../miniApps/trivia/assets/threelines.svg" class="trivia_button_icon" style="filter: invert(75%);"/>
-                    </button>
-                </div>
+        <div class="question_header">
+            <div class="question_header_left" style="z-index: 9">
+                <button class="trivia_button spotlight" style="width: 40px;" onclick="deleteQuestion(this)">
+                    <img src="../miniApps/trivia/assets/x.svg" class="trivia_button_icon" alt="X" />
+                </button>
+                <button class="trivia_button spotlight" style="width: 40px;" onclick="toggleQuestion(this)">
+                    <img src="../miniApps/trivia/assets/arrow-down.svg" class="trivia_button_icon" alt="v" />
+                </button>
             </div>
+            <label class="question_label">Question ${questionCount}</label>
+            <div class="question_header_right">
+                <button type="button" class="reorder_answer">
+                    <img src="../miniApps/trivia/assets/threelines.svg" class="trivia_button_icon" style="filter: invert(75%);"/>
+                </button>
+            </div>
+        </div>
+        <div class="form_group" style="margin-top: 15px;">
             <input type="text" class="question_text form_input" placeholder="Type your question here">
         </div>
         <div class="form_group">
@@ -87,30 +97,48 @@ function addQuizQuestion() {
 
 function toggleQuestion(button) {
     const questionItem = button.closest('.question_item');
-    const questionText = questionItem.querySelector('.question_text');
+    const questionText = questionItem.querySelector('.question_text').closest('.form_group');
     const typeTabsGroup = questionItem.querySelector('.question_type_tabs').closest('.form_group');
     const detailsDiv = questionItem.querySelector('.question_details');
     const arrowIcon = button.querySelector('img');
 
-    const isVisible = typeTabsGroup.style.display !== 'none';
-
-    [questionText, typeTabsGroup, detailsDiv].forEach(el => {
-        if (el) el.style.display = isVisible ? 'none' : 'block';
-    });
-
-    arrowIcon.style.transform = isVisible ? 'rotate(180deg)' : 'rotate(0deg)';
     arrowIcon.style.transition = 'transform 0.3s';
 
-    if (!isVisible) {
+    let collapsibleContent = questionItem.querySelector('.collapsible-content');
+    if (!collapsibleContent) {
+        collapsibleContent = document.createElement('div');
+        collapsibleContent.className = 'collapsible-content';
+
+        [questionText, typeTabsGroup, detailsDiv].forEach(el => {
+            if (el) collapsibleContent.appendChild(el);
+        });
+
+        const header = questionItem.querySelector('.question_header');
+        header.insertAdjacentElement('afterend', collapsibleContent);
+
+        requestAnimationFrame(() => {
+            collapsibleContent.classList.add('collapsed');
+            questionItem.classList.add('collapsed');
+            arrowIcon.style.transform = 'rotate(-180deg)';
+        });
+        return;
+    }
+
+    const isCollapsed = collapsibleContent.classList.contains('collapsed');
+    collapsibleContent.classList.toggle('collapsed', !isCollapsed);
+    questionItem.classList.toggle('collapsed', !isCollapsed);
+
+    arrowIcon.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(-180deg)';
+    arrowIcon.style.transition = 'transform 0.3s';
+
+    if (isCollapsed) {
         setTimeout(() => {
             const tabs = questionItem.querySelectorAll('.question_type_tab');
             tabs.forEach(tab => {
                 tab.style.flex = '1 1 33%';
             });
-        }, 10);
+        }, 300);
     }
-
-    questionItem.style.padding = isVisible ? '10px 10px' : '10px 10px 20px 10px';
 }
 
 function deleteQuestion(button) {
@@ -237,31 +265,11 @@ function attachAnswerManagementListeners(detailsDiv, questionCount, type) {
     const answersContainer = detailsDiv.querySelector('.answers_container');
     const addAnswerBtn = answersContainer.querySelector('.add_answer');
 
-    answersContainer.addEventListener('dragstart', function(e) {
-        const answerGroup = e.target.closest('.answer_group');
-        if (answerGroup) {
-            e.dataTransfer.setData('text/plain', answerGroup.dataset.index);
-            e.dataTransfer.effectAllowed = 'move';
-        }
-    });
-
-    answersContainer.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-    });
-
-    answersContainer.addEventListener('drop', function(e) {
-        e.preventDefault();
-        const draggedIndex = e.dataTransfer.getData('text/plain');
-        const target = e.target.closest('.answer_group');
-        if (target && target.dataset.index !== draggedIndex) {
-            const draggedElement = answersContainer.querySelector(`[data-index="${draggedIndex}"]`);
-            if (draggedElement && target) {
-                answersContainer.insertBefore(draggedElement, target);
-                updateAnswerIndices(answersContainer, questionCount, type);
-            }
-        }
-    });
+    attachDragAndDropListeners(
+        answersContainer,
+        '.answer_group',
+        (container) => updateAnswerIndices(container, questionCount, type)
+    );
 
     addAnswerBtn.addEventListener('click', function() {
         const numAnswers = answersContainer.querySelectorAll('.answer_group').length;
@@ -354,27 +362,17 @@ function saveQuiz() {
                 hasError = true;
             } else {
                 const correct = parseInt(correctRadio.value);
-                const answerInputs = item.querySelectorAll('.answer_text');
-                let answers = [];
-                for (let j = 0; j < answerInputs.length; j++) {
-                    const answerText = answerInputs[j].value.trim();
-                    if (!answerText) {
-                        errorMessages.push(`Question ${i+1} has an empty answer.`);
-                        hasError = true;
-                    } else {
-                        answers.push(answerText);
-                    }
-                }
-                if (!hasError && correct >= 0 && correct < answers.length) {
+                const result = validateAndExtractAnswers(item, i);
+                if (result.hasError) {
+                    errorMessages.push(...result.errors);
+                    hasError = true;
+                } else if (correct >= 0 && correct < result.answers.length) {
                     questions.push({
                         type: 'single_choice',
                         question: questionText,
-                        answers: answers,
+                        answers: result.answers,
                         correct: correct
                     });
-                } else if (correct < 0 || correct >= answers.length) {
-                    errorMessages.push(`Question ${i+1} has an invalid correct answer index.`);
-                    hasError = true;
                 }
             }
         } else if (questionType === 'multiple_choice') {
@@ -384,22 +382,15 @@ function saveQuiz() {
                 errorMessages.push(`Question ${i+1} (Multiple Choice) has no correct answers selected.`);
                 hasError = true;
             } else {
-                const answerInputs = item.querySelectorAll('.answer_text');
-                let answers = [];
-                for (let j = 0; j < answerInputs.length; j++) {
-                    const answerText = answerInputs[j].value.trim();
-                    if (!answerText) {
-                        errorMessages.push(`Question ${i+1} has an empty answer.`);
-                        hasError = true;
-                    } else {
-                        answers.push(answerText);
-                    }
-                }
-                if (!hasError) {
+                const result = validateAndExtractAnswers(item, i);
+                if (result.hasError) {
+                    errorMessages.push(...result.errors);
+                    hasError = true;
+                } else {
                     questions.push({
                         type: 'multiple_choice',
                         question: questionText,
-                        answers: answers,
+                        answers: result.answers,
                         correct: correct
                     });
                 }
@@ -461,38 +452,25 @@ function saveQuiz() {
     setTriviaScenario('trivia-list');
 }
 
-function add_contacts() {
-    launchContactsMenu("Trivia", "Pick players to invite to the quiz");
-}
+function validateAndExtractAnswers(item, questionIndex) {
+    const answerInputs = item.querySelectorAll('.answer_text');
+    let answers = [];
+    let errors = [];
+    let hasEmptyAnswer = false;
 
-function trivia_contacts_confirmed() {
-    const contactsContainer = document.getElementById('quiz_contacts_container');
-
-    const existingPills = contactsContainer.querySelectorAll('.contact_pill');
-    existingPills.forEach(pill => pill.remove());
-
-    if (window.tremola && tremola.contacts) {
-        for (const contactId in tremola.contacts) {
-            const contactElement = document.getElementById(contactId);
-            if (contactElement && contactElement.checked) {
-                const displayName = fid2display(contactId);
-                const contactPill = document.createElement('div');
-                contactPill.className = 'contact_pill';
-                contactPill.textContent = displayName;
-                contactPill.dataset.contactId = contactId;
-
-                const removeBtn = document.createElement('span');
-                removeBtn.className = 'remove_contact';
-                removeBtn.innerHTML = '&times;';
-                removeBtn.onclick = () => {
-                    contactPill.remove();
-                };
-
-                contactPill.appendChild(removeBtn);
-                contactsContainer.appendChild(contactPill);
-            }
+    for (let j = 0; j < answerInputs.length; j++) {
+        const answerText = answerInputs[j].value.trim();
+        if (!answerText) {
+            errors.push(`Question ${questionIndex+1} has an empty answer.`);
+            hasEmptyAnswer = true;
+        } else {
+            answers.push(answerText);
         }
     }
 
-    setTriviaScenario('trivia-create');
+    return {
+        answers: answers,
+        hasError: hasEmptyAnswer,
+        errors: errors
+    };
 }

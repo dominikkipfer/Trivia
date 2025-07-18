@@ -14,7 +14,7 @@ function trivia_load_board(quizId) {
 
     document.getElementById('solve_quiz_title').innerText = quizData.quiz.title;
     const container = document.getElementById('solve_quiz_container');
-    container.innerHTML = ''; // Container leeren
+    container.innerHTML = '';
 
     quizData.quiz.questions.forEach((q, index) => {
         const questionDiv = document.createElement('div');

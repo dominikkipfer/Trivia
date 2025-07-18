@@ -8,6 +8,7 @@
   "scripts": [
     "src/trivia.js",
     "src/trivia_create.js",
+    "src/trivia_contacts.js",
     "src/trivia_solve.js",
     "src/trivia_ui.js"
   ],
@@ -33,6 +34,17 @@
         "div:back",
         "core",
         "div:trivia-create"
+      ]
+    },
+    "trivia-contacts": {
+      "menu": {
+        "Settings": "menu_settings",
+        "About": "menu_about"
+      },
+      "display": [
+        "div:back",
+        "core",
+        "div:trivia-contacts"
       ]
     },
     "trivia-solve": {

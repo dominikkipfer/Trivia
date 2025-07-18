@@ -146,7 +146,7 @@
     font-size: 1em;
 }
 
-#div\:trivia-create::before {
+#div\:trivia-contacts::before, #div\:trivia-create::before {
     content: '';
     position: absolute;
     left: 0;
@@ -201,10 +201,31 @@
 
 .question_item {
     background: #fff;
-    border-radius: 30px;
-    padding: 10px 10px 20px 10px;
+    border-radius: 35px;
+    padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #eee;
+}
+
+.question_item.collapsed {
+    border-radius: 35px;
+}
+
+.question_item:not(.collapsed) {
+    border-radius: 30px;
+}
+
+.collapsible-content {
+    overflow: hidden;
+    max-height: 1000px;
+    transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 1;
+}
+
+.collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
 }
 
 .answers_container {
@@ -291,10 +312,10 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
     padding: 10px;
     border: 1px solid #ddd;
-    border-radius: 30px;
+    border-radius: 35px;
     min-height: 40px;
     background: rgba(255, 255, 255, 0.7);
 }
@@ -362,6 +383,7 @@
     z-index: 9;
     transition: transform 0.3s ease;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .remove_answer {
@@ -370,7 +392,7 @@
 
 .add_answer {
     background: rgba(0, 255, 0, 0.8);
-    margin: 20px 0 0 10px;
+    margin: 20px 0 10px 10px;
 }
 
 .reorder_answer {
@@ -392,16 +414,12 @@
     filter: invert(100%);
 }
 
-
-
-
-
 .question_header {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    margin-bottom: 10px;
     position: relative;
+    margin: 0;
     width: 100%;
 }
 
@@ -440,8 +458,6 @@
     margin-right: 8px;
 }
 
-
-
 input[type="checkbox"] {
     min-width: 16px;
     max-width: 16px;
@@ -458,4 +474,73 @@ input[type="radio"] {
     max-height: 15.3px;
     cursor: pointer;
     align-items: center;
+}
+
+.contacts_list_container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.contact_item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 30px;
+    border: 1px solid #ddd;
+}
+
+.contact_item label {
+    margin-left: 10px;
+    flex-grow: 1;
+}
+
+.dragging {
+}
+
+.drop-above {
+}
+
+.drop-below {
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#div\:trivia-list,
+#div\:trivia-create,
+#div\:trivia-solve,
+#div\:trivia-contacts {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-top: 70px;
+}
+
+.scene-enter-bottom {
+    transform: translateY(100%);
+}
+
+.scene-exit-bottom {
+    transform: translateY(100%);
+}
+
+#div\:back {
+    z-index: 999;
 }

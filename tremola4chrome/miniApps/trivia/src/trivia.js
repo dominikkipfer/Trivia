@@ -11,9 +11,6 @@ globalWindow.miniApps["trivia"] = {
             case "onBackPressed":
                 TriviaUi.onBackPressed();
                 break;
-            case "members_confirmed":
-                TriviaCreate.onContactsConfirmed();
-                break;
             case "b2f_initialize":
             case "b2f_new_event":
                 TriviaUi.refresh();
@@ -28,21 +25,30 @@ globalWindow.miniApps["trivia"] = {
 
 const TriviaLogic = {
     onIncoming(raw) {
-        let messages = Array.isArray(raw) ? raw : JSON.parse(raw.content || raw);
-        if (!Array.isArray(messages)) return;
+        let data = Array.isArray(raw) ? raw : JSON.parse(raw.content || raw);
+        if (!Array.isArray(data)) return;
 
         if (!tremola.trivia) tremola.trivia = { active: {}, closed: {} };
-        messages.forEach(msg => {
-            if (!msg?.type || !msg.quiz) return;
-            tremola.trivia.active[msg.quiz.nm] = {
-                nm: msg.quiz.nm,
-                from: msg.from || 'unknown',
-                quiz: msg.quiz,
-                isOwn: false,
-                state: 'new'
-            };
-            persist();
-            if (TriviaScenario === 'trivia-list') TriviaUi.refresh();
+
+        data.forEach(item => {
+            const msg = item.args ? item.args[0] : item;
+            if (!msg || msg.type !== 'trivia-quiz' || !msg.quiz) return;
+
+            if (msg.to && msg.to.includes(myId)) {
+                const isOwnQuiz = msg.from === myId;
+                const selfSent = isOwnQuiz && msg.to.includes(myId);
+
+                tremola.trivia.active[msg.nm] = {
+                    nm: msg.nm,
+                    from: msg.from,
+                    quiz: msg.quiz,
+                    isOwn: isOwnQuiz,
+                    state: 'new',
+                    selfSent: selfSent
+                };
+                persist();
+                if (TriviaScenario === 'trivia-list') TriviaUi.refresh();
+            }
         });
     }
 };

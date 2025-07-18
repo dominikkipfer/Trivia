@@ -1,6 +1,5 @@
 let TriviaScenario = null;
 let animationInProgress = false;
-let currentAnimationTimeout = null;
 
 const TriviaUi = {
     onBackPressed() {
@@ -18,20 +17,40 @@ const TriviaUi = {
     renderLists() {
         if (!tremola.trivia) tremola.trivia = { active: {}, closed: {} };
 
-        const todo = Object.values(tremola.trivia.active).filter(q => q.state !== 'solved');
-        const own  = Object.values(tremola.trivia.active).filter(q => q.isOwn);
+        const allSolvable = Object.values(tremola.trivia.active).filter(q =>
+            (!q.isOwn || q.selfSent)
+        );
 
-        const render = (arr, html) => html.length ? html.join('') :
-            '<p style="text-align:center;color:#666;">Nothing here.</p>';
+        const todoNew = allSolvable.filter(q => q.state !== 'solved');
+        const todoSolved = allSolvable.filter(q => q.state === 'solved');
+        const own = Object.values(tremola.trivia.active).filter(q => q.isOwn);
 
-        document.getElementById('trivia_solving_list').innerHTML = render(todo,
-            todo.map(q =>
+        const renderSection = (arr, header) => {
+            if (arr.length === 0) return '';
+            return `
+            <div class="quiz_section">
+                <h3 class="section_header">${header}</h3>
+                ${arr.map(q =>
                 `<button class='trivia_list_button' style='width:90%;' onclick="TriviaSolve.load('${q.nm}')">
-                    Quiz: ${q.quiz.title || 'No Title'}<br><font size=-1>from ${fid2display(q.from)}</font>
-                </button>`));
+                        Quiz: ${q.quiz.title || 'No Title'}<br><font size=-1>from ${fid2display(q.from)}</font>
+                    </button>`
+            ).join('')}
+            </div>
+            `;
+        };
 
-        document.getElementById('trivia_created_quizzes').innerHTML = render(own,
-            own.map(q => `<div class='chat_item_div'>Quiz: ${q.quiz.title || 'No Title'}</div>`));
+        document.getElementById('trivia_solving_list').innerHTML =
+            (todoNew.length === 0 && todoSolved.length === 0)
+                ? '<p style="text-align:center;color:#666;">No quizzes to solve.</p>'
+                : renderSection(todoNew, 'New Quizzes') +
+                renderSection(todoSolved, 'Solved Quizzes');
+
+        document.getElementById('trivia_created_quizzes').innerHTML =
+            own.length === 0
+                ? '<p style="text-align:center;color:#666;">No quizzes created.</p>'
+                : own.map(q =>
+                    `<div class='chat_item_div'>Quiz: ${q.quiz.title || 'No Title'}</div>`
+                ).join('');
     }
 };
 
@@ -199,9 +218,9 @@ function attachDragAndDropListeners(container, itemSelector, afterDropCallback) 
     });
 }
 
-document.querySelectorAll('.spotlight').forEach(btn => {
-    btn.onmousemove = e => {
-        btn.style.setProperty('--x', (e.pageX - btn.offsetLeft) + 'px');
-        btn.style.setProperty('--y', (e.pageY - btn.offsetTop) + 'px');
+document.querySelectorAll('.spotlight').forEach(element => {
+    element.onmousemove = e => {
+        element.style.setProperty('--x', (e.pageX - element.offsetLeft) + 'px');
+        element.style.setProperty('--y', (e.pageY - element.offsetTop) + 'px');
     };
 });

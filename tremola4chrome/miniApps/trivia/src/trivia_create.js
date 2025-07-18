@@ -329,7 +329,7 @@ function saveQuiz() {
     const description = document.getElementById('quiz_description').value.trim();
     const questionItems = document.getElementsByClassName('question_item');
     const contactsContainer = document.getElementById('quiz_contacts_container');
-    const selectedContacts = Array.from(contactsContainer.children).map(el => el.dataset.contactId);
+    const selectedContacts = Array.from(contactsContainer.children).map(el => el.dataset.contactId).filter(id => id && id !== 'undefined');
 
     let hasError = false;
     let errorMessages = [];
@@ -433,16 +433,26 @@ function saveQuiz() {
         title: title,
         description: description,
         questions: questions,
-        recipients: selectedContacts,
         created: new Date().toISOString()
     };
 
     const nm = myId + "-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
     quizData.nm = nm;
 
+    if (!tremola.trivia) tremola.trivia = { active: {}, closed: {} };
+    tremola.trivia.active[nm] = {
+        nm: nm,
+        from: myId,
+        quiz: quizData,
+        isOwn: true,
+        state: 'new'
+    };
+    persist();
+
     const quizMessage = {
         type: 'trivia-quiz',
         from: myId,
+        to: selectedContacts,
         nm: nm,
         quiz: quizData
     };

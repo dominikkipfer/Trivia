@@ -13,7 +13,6 @@ const TriviaContacts = {
 
 function showContactSelection () {
     tremola.trivia.previousScenario = TriviaScenario;
-    getContactsList();
     setTriviaScenario('trivia-contacts');
     populateContactsList();
 }
@@ -51,7 +50,7 @@ function confirmContactSelection () {
     document
         .querySelectorAll('#trivia_contacts_list input[type="checkbox"]:checked')
         .forEach(cb => {
-            const id   = cb.value;
+            const id = cb.value;
             const name = fid2display(id);
 
             const pill = document.createElement('div');
@@ -74,6 +73,3 @@ function confirmContactSelection () {
 function cancelContactSelection () {
     setTriviaScenario(tremola.trivia.previousScenario || 'trivia-create');
 }
-
-if (!globalWindow.miniApps) globalWindow.miniApps = {};
-globalWindow.miniApps.triviaContacts = TriviaContacts;

@@ -246,9 +246,44 @@ function attachDragAndDropListeners(container, itemSelector, afterDropCallback) 
     });
 }
 
-document.querySelectorAll('.spotlight').forEach(element => {
-    element.onmousemove = e => {
-        element.style.setProperty('--x', (e.pageX - element.offsetLeft) + 'px');
-        element.style.setProperty('--y', (e.pageY - element.offsetTop) + 'px');
-    };
+const spotlightElements = new Set();
+
+const handleMouseMove = (e) => {
+    const element = e.currentTarget;
+    const rect = element.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    element.style.setProperty('--x', `${x}px`);
+    element.style.setProperty('--y', `${y}px`);
+};
+
+const attachEventListener = (element) => {
+    if (!spotlightElements.has(element)) {
+        element.addEventListener('mousemove', handleMouseMove);
+        spotlightElements.add(element);
+    }
+};
+
+const currentSpotlightElements = Array.from(document.getElementsByClassName('spotlight'));
+currentSpotlightElements.forEach(attachEventListener);
+
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((node) => {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.classList.contains('spotlight')) {
+                        attachEventListener(node);
+                    }
+                    const descendants = node.querySelectorAll('.spotlight');
+                    descendants.forEach(attachEventListener);
+                }
+            });
+        }
+    });
+});
+
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
 });

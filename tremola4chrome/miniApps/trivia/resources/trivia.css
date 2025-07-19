@@ -330,6 +330,7 @@
 }
 
 .spotlight::before{
+    pointer-events: none;
     content: '';
     position: absolute;
     left: var(--x, 0px);
@@ -340,12 +341,10 @@
     height: 100px;
     opacity: 0;
     transition: 0.5s, top 0s, left 0s;
-    z-index: 999;
-
 }
+
 .spotlight:hover::before{
     opacity: 0.6;
-    z-index: 999;
 }
 
 ::-webkit-scrollbar {

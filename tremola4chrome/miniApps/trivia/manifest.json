@@ -10,15 +10,13 @@
     "src/trivia_create.js",
     "src/trivia_contacts.js",
     "src/trivia_solve.js",
-    "src/trivia_ui.js"
+    "src/trivia_ui.js",
+    "src/trivia_settings.js",
+    "src/trivia_encryption.js"
   ],
   "htmlFile": "resources/trivia.html",
   "scenario": {
     "trivia-list": {
-      "menu": {
-        "Settings": "menu_settings",
-        "About": "menu_about"
-      },
       "display": [
         "div:back",
         "core",
@@ -26,10 +24,6 @@
       ]
     },
     "trivia-create": {
-      "menu": {
-        "Settings": "menu_settings",
-        "About": "menu_about"
-      },
       "display": [
         "div:back",
         "core",
@@ -37,10 +31,6 @@
       ]
     },
     "trivia-contacts": {
-      "menu": {
-        "Settings": "menu_settings",
-        "About": "menu_about"
-      },
       "display": [
         "div:back",
         "core",
@@ -48,14 +38,17 @@
       ]
     },
     "trivia-solve": {
-      "menu": {
-        "Settings": "menu_settings",
-        "About": "menu_about"
-      },
       "display": [
         "div:back",
         "core",
         "div:trivia-solve"
+      ]
+    },
+    "trivia-settings": {
+      "display": [
+        "div:back",
+        "core",
+        "div:trivia-settings"
       ]
     }
   }

@@ -1,4 +1,5 @@
 const globalWindow = window.top || window;
+const keyRing = new Map();
 
 if (!globalWindow.miniApps) {
     globalWindow.miniApps = {};
@@ -32,22 +33,35 @@ const TriviaLogic = {
 
         data.forEach(item => {
             const msg = item.args ? item.args[0] : item;
-            if (!msg || msg.type !== 'trivia-quiz' || !msg.quiz) return;
+            if (!msg) return;
 
-            if (msg.to && msg.to.includes(myId)) {
-                const isOwnQuiz = msg.from === myId;
-                const selfSent = isOwnQuiz && msg.to.includes(myId);
-
-                tremola.trivia.active[msg.nm] = {
-                    nm: msg.nm,
-                    from: msg.from,
-                    quiz: msg.quiz,
-                    isOwn: isOwnQuiz,
-                    state: 'new',
-                    selfSent: selfSent
-                };
-                persist();
-                if (TriviaScenario === 'trivia-list') TriviaUi.refresh();
+            switch (msg.type) {
+                case 'trivia-key':
+                    if (msg.from && msg.pub) {
+                        const pubKey = TriviaCrypto.base64ToBuf(msg.pub);
+                        keyRing.set(msg.from, pubKey);
+                        persist();
+                    }
+                    break;
+                case 'trivia-quiz':
+                    if (msg.to && msg.to.includes(myId) && msg.quiz) {
+                        const isOwnQuiz = msg.from === myId;
+                        const selfSent = isOwnQuiz && msg.to.includes(myId);
+                        tremola.trivia.active[msg.nm] = {
+                            nm: msg.nm,
+                            from: msg.from,
+                            quiz: msg.quiz,
+                            isOwn: isOwnQuiz,
+                            state: 'new',
+                            selfSent: selfSent
+                        };
+                        persist();
+                        if (TriviaScenario === 'trivia-list') TriviaUi.refresh();
+                    }
+                    break;
+                default:
+                    console.warn("Unknown trivia message type:", msg.type);
+                    break;
             }
         });
     }

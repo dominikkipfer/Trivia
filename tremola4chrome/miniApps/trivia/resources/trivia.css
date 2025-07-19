@@ -136,6 +136,13 @@
     font-size: 22px;
 }
 
+.trivia_settings_button {
+    display: none;
+    top: 3pt;
+    right: 45px;
+    z-index: 999;
+}
+
 .trivia_list_button {
     position: relative;
     height: auto;

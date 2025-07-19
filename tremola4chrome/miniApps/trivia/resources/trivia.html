@@ -1,3 +1,6 @@
+<button class="trivia_button trivia_settings_button spotlight" onclick="setTriviaScenario('trivia-settings')">
+    <img src="../miniApps/trivia/assets/settings.svg" class="trivia_button_icon" alt="⚙️" />
+</button>
 <div id="div:trivia-list" style="display: none; text-align: center;">
     <div id="trivia_tabs" class="trivia_tabs_bottom" style="display: flex; justify-content: center; margin-bottom: 10px;">
         <button id="tab_solving" onclick="showTriviaTab('solvable')" class="trivia_tab_active">
@@ -82,4 +85,13 @@
     <div class="trivia_create_form">
         <div id="trivia_contacts_list" class="contacts_list_container"></div>
     </div>
+</div>
+<div id="div:trivia-settings" style="display: none;">
+    <button class="trivia_button spotlight" style="left: 15px; width: 40px; top: 63pt;" onclick="cancelSettings()">
+        <img src="../miniApps/trivia/assets/x.svg" class="trivia_button_icon" alt="X" />
+    </button>
+    <button class="trivia_button spotlight" style="right: 15px; width: 40px; top: 63pt;" onclick="confirmSettings()">
+        <img src="../miniApps/trivia/assets/done.svg" class="trivia_button_icon" alt="Done" />
+    </button>
+    <h2 class="trivia_create_title">Settings</h2>
 </div>

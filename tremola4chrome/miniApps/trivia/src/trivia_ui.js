@@ -8,6 +8,10 @@ const TriviaUi = {
         } else if (TriviaScenario === 'trivia-contacts') {
             setTriviaScenario(tremola.trivia.previousScenario || 'trivia-create');
         } else if (TriviaScenario === 'trivia-list') {
+            const settingsButton = document.querySelector('.trivia_settings_button');
+            if (settingsButton) {
+                settingsButton.style.display = 'none';
+            }
             quitApp();
         }
     },
@@ -85,6 +89,11 @@ const TriviaUi = {
 function setTriviaScenario(s) {
     const prevScenario = TriviaScenario;
     TriviaScenario = s;
+
+    const settingsButton = document.querySelector('.trivia_settings_button');
+    if (settingsButton) {
+        settingsButton.style.display = s.startsWith('trivia-') ? 'flex' : 'none';
+    }
 
     if (animationInProgress) {
         return;

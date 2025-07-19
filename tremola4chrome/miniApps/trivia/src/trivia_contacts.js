@@ -1,9 +1,3 @@
-/**
- *  trivia_contacts.js
- *  Everything that touches the contact-selection UI
- *  (formerly part of trivia_create.js)
- */
-
 const TriviaContacts = {
     show()               { showContactSelection(); },
     confirmSelection()   { confirmContactSelection(); },

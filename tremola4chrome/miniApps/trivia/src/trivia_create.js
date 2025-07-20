@@ -9,9 +9,14 @@ function showQuizCreationForm() {
     document.getElementById("tremolaTitle").style.display = 'none';
     document.getElementById('quiz_title').value = '';
     document.getElementById('quiz_description').value = '';
-    document.getElementById('questions_container').innerHTML = '';
+
+    const contactsContainer = document.getElementById('quiz_contacts_container');
+    const contactElements = contactsContainer.querySelectorAll('.contact_pill');
+    contactElements.forEach(el => el.remove());
 
     const questionsContainer = document.getElementById('questions_container');
+    questionsContainer.innerHTML = '';
+
     attachDragAndDropListeners(
         questionsContainer,
         '.question_item',
@@ -149,7 +154,7 @@ function deleteQuestion(button) {
 }
 
 function updateQuestionLabels() {
-    const questionItems = document.querySelectorAll('.question_item');
+    const questionItems = document.getElementById('questions_container').getElementsByClassName('question_item');
     questionItems.forEach((item, index) => {
         const label = item.querySelector('.question_label');
         if (label) {
@@ -326,7 +331,7 @@ function updateAnswerIndices(answersContainer, questionCount, type) {
 async function saveQuiz() {
     const title = document.getElementById('quiz_title').value.trim();
     const description = document.getElementById('quiz_description').value.trim();
-    const questionItems = document.getElementsByClassName('question_item');
+    const questionItems = document.getElementById('questions_container').getElementsByClassName('question_item');
     const contactsContainer = document.getElementById('quiz_contacts_container');
     const selectedContacts = Array.from(contactsContainer.children)
         .map(el => el.dataset.contactId).filter(id => id && id !== 'undefined');
@@ -348,7 +353,13 @@ async function saveQuiz() {
     let solutions = [];
     for (let i = 0; i < questionItems.length; i++) {
         const item = questionItems[i];
-        const questionText = item.querySelector('.question_text').value.trim();
+        const questionTextElement = item.querySelector('.question_text');
+        if (!questionTextElement) {
+            errorMessages.push(`Frage ${i + 1} hat eine ungültige Struktur.`);
+            hasError = true;
+            continue;
+        }
+        const questionText = questionTextElement.value.trim();
         if (!questionText) {
             errorMessages.push(`Question ${i + 1} has no text.`);
             hasError = true;

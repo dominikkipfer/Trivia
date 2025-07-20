@@ -1,15 +1,19 @@
+// Manages the contact selection process for trivia
 const TriviaContacts = {
+    // Show contact selection screen
     show() {
         showContactSelection();
     }
 };
 
+// Load and display contact selection
 function showContactSelection () {
     tremola.trivia.previousScenario = TriviaScenario;
     setTriviaScenario('trivia-contacts');
     populateContactsList();
 }
 
+// Populate the contact list with checkboxes
 function populateContactsList () {
     const container = document.getElementById('trivia_contacts_list');
     container.innerHTML = '';
@@ -36,6 +40,7 @@ function populateContactsList () {
     }
 }
 
+// Confirm and save selected contacts
 function confirmContactSelection () {
     const pillContainer = document.getElementById('quiz_contacts_container');
     pillContainer.querySelectorAll('.contact_pill').forEach(p => p.remove());
@@ -63,6 +68,7 @@ function confirmContactSelection () {
     setTriviaScenario(tremola.trivia.previousScenario || 'trivia-create');
 }
 
+// Cancel selection and go back
 function cancelContactSelection () {
     setTriviaScenario(tremola.trivia.previousScenario || 'trivia-create');
 }

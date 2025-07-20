@@ -17,37 +17,56 @@ function trivia_load_board(quizId) {
     container.innerHTML = '';
 
     quizData.quiz.questions.forEach((q, index) => {
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'question_item';
-        let content = `<h3>Question ${index + 1}: ${q.question}</h3>`;
+        const questionSolve = document.createElement('div');
+        questionSolve.className = 'question_item';
+
+        const questionHeader = document.createElement('h3');
+        questionHeader.textContent = `Question ${index + 1}: ${q.question}`;
+        questionSolve.appendChild(questionHeader);
 
         if (q.type === 'single_choice' || q.type === 'multiple_choice') {
             const inputType = q.type === 'single_choice' ? 'radio' : 'checkbox';
-            content += q.answers.map((ans, i) => `
-                <div class="form_group">
-                    <input type="${inputType}" id="q${index}_ans${i}" name="q_${index}" value="${i}">
-                    <label for="q${index}_ans${i}">${ans}</label>
-                </div>
-            `).join('');
+
+            q.answers.forEach((ans, i) => {
+                const answerGroup = document.createElement('div');
+                answerGroup.className = 'form_group answer_group';
+
+                const input = document.createElement('input');
+                input.type = inputType;
+                input.id = `q${index}_ans${i}`;
+                input.name = `q_${index}`;
+                input.value = i;
+
+                const label = document.createElement('label');
+                label.htmlFor = `q${index}_ans${i}`;
+                label.textContent = ans;
+
+                answerGroup.appendChild(input);
+                answerGroup.appendChild(label);
+                questionSolve.appendChild(answerGroup);
+            });
         } else if (q.type === 'open_ended') {
-            content += `<div class="form_group"><input type="text" class="form_input" placeholder="Your answer"></div>`;
+            const formGroup = document.createElement('div');
+            formGroup.className = 'form_group';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'form_input';
+            input.id = `q${index}_open`;
+            input.name = `q_${index}`;
+            input.placeholder = 'Your answer.';
+
+            formGroup.appendChild(input);
+            questionSolve.appendChild(formGroup);
         }
-        questionDiv.innerHTML = content;
-        container.appendChild(questionDiv);
+
+        container.appendChild(questionSolve);
     });
 
     setTriviaScenario('trivia-solve');
 }
 
 function cancel_quiz() {
-    const quizId = tremola.trivia.current;
-    if (!quizId) return;
-    const json = {
-        type: 'trivia-giveup',
-        nm: quizId,
-        from: myId
-    };
-    writeLogEntry(JSON.stringify(json));
     setTriviaScenario('trivia-list');
 }
 
@@ -168,6 +187,6 @@ async function submit_quiz() {
     tremola.trivia.active[quizId].results = tremola.trivia.active[quizId].results || {};
     tremola.trivia.active[quizId].results[myId] = result;
 
-    TriviaResults.show(quiz, results);
+    TriviaResults.show(quiz, results, myId);
     persist();
 }

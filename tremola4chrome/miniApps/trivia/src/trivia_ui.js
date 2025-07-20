@@ -3,14 +3,12 @@ let animationInProgress = false;
 
 const TriviaUi = {
     onBackPressed() {
-        if (TriviaScenario === 'trivia-create' || TriviaScenario === 'trivia-solve') {
+        if (TriviaScenario === 'trivia-create' || TriviaScenario === 'trivia-solve' || TriviaScenario === 'trivia-quiz-info') {
             setTriviaScenario('trivia-list');
         } else if (TriviaScenario === 'trivia-contacts') {
-            setTriviaScenario(tremola.trivia.previousScenario || 'trivia-create');
-        } else if (TriviaScenario === 'trivia-results' && tremola.trivia.previousScenario === 'trivia-quiz-info') {
-            setTriviaScenario(tremola.trivia.previousScenario || 'trivia-list');
-        } else if (TriviaScenario === 'trivia-results' && tremola.trivia.previousScenario === 'trivia-solve') {
-            setTriviaScenario('trivia-list');
+            cancelContactSelection();
+        } else if (TriviaScenario === 'trivia-results') {
+            closeResults();
         } else if (TriviaScenario === 'trivia-list') {
             quitApp();
         }
@@ -30,7 +28,7 @@ const TriviaUi = {
         const own = Object.values(tremola.trivia.active).filter(q => q.isOwn);
 
         const formatDate = (dateString) => {
-            if (!dateString) return 'Unbekanntes Datum';
+            if (!dateString) return 'Unknown date';
             const date = new Date(dateString);
             return date.toLocaleDateString('de-CH', {
                 day: '2-digit',
@@ -48,8 +46,10 @@ const TriviaUi = {
                     ${arr.map(q => {
                     const questions = q.quiz.questions || [];
                     const createdDate = formatDate(q.quiz.created);
+                    const onClickHandler = isCreated ? `tremola.trivia.current = '${q.nm}'; openQuizInfo()` : (q.state === 'solved'
+                        ? `showSolvedQuizResults('${q.nm}')` : `TriviaSolve.load('${q.nm}')`);
     
-                    return `<button class="trivia_button trivia_list_button spotlight" onclick="${isCreated ? 'trivia_load_board' : 'TriviaSolve.load'}('${q.nm}')">
+                    return `<button class="trivia_button trivia_list_button spotlight" onclick="${onClickHandler}">
                             <div class="quiz_item">
                                 <div class="quiz_title">${q.quiz.title || 'No Title'}</div>
                                 <div class="quiz_questions">
@@ -194,6 +194,17 @@ function showTriviaTab(tab) {
     document.getElementById('tab_leaderboard').classList.toggle('trivia_tab_active', tab === 'leaderboard');
 
     document.getElementById('trivia_created_list').classList.toggle('active', tab === 'created');
+}
+
+function showSolvedQuizResults(quizId) {
+    const quiz = tremola.trivia.active[quizId];
+    if (!quiz || !quiz.results || !quiz.results[myId]) {
+        return;
+    } else {
+        tremola.trivia.previousScenario = 'trivia-list';
+        const results = quiz.results[myId].results;
+        TriviaResults.show(quiz, results, myId);
+    }
 }
 
 function attachDragAndDropListeners(container, itemSelector, afterDropCallback) {

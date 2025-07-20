@@ -142,9 +142,7 @@ function scheduleBroadcast() {
     const allIds = new Set([...keyRing.keys(), myId]);
     const sortedIds = Array.from(allIds).sort();
     const myPosition = sortedIds.indexOf(myId);
-
-    const delay = (myPosition + 1) * 5000;
-    console.log(`Plane Broadcast in ${delay/1000} Sekunden (Position: ${myPosition + 1})`);
+    const delay = (myPosition + 1) * 2000;
 
     const timerId = setTimeout(() => {
         broadcastPublicKey();
@@ -174,8 +172,7 @@ function broadcastPublicKey() {
 
     const keyMsg = {
         type: 'trivia-key',
-        keys: allKeys,
-        timestamp: Date.now()
+        keys: allKeys
     };
 
     backend("customApp:writeEntry trivia " + JSON.stringify(keyMsg));

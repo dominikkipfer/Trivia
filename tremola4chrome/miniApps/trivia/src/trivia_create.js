@@ -324,7 +324,7 @@ function updateAnswerIndices(answersContainer, questionCount, type) {
     });
 }
 
-function saveQuiz() {
+async function saveQuiz() {
     const title = document.getElementById('quiz_title').value.trim();
     const description = document.getElementById('quiz_description').value.trim();
     const questionItems = document.getElementsByClassName('question_item');
@@ -349,7 +349,7 @@ function saveQuiz() {
         const item = questionItems[i];
         const questionText = item.querySelector('.question_text').value.trim();
         if (!questionText) {
-            errorMessages.push(`Question ${i+1} has no text.`);
+            errorMessages.push(`Question ${i + 1} has no text.`);
             hasError = true;
             continue;
         }
@@ -358,7 +358,7 @@ function saveQuiz() {
         if (questionType === 'single_choice') {
             const correctRadio = item.querySelector('input[type="radio"]:checked');
             if (!correctRadio) {
-                errorMessages.push(`Question ${i+1} (Single Choice) has no correct answer selected.`);
+                errorMessages.push(`Question ${i + 1} (Single Choice) has no correct answer selected.`);
                 hasError = true;
             } else {
                 const correct = parseInt(correctRadio.value);
@@ -379,7 +379,7 @@ function saveQuiz() {
             const correctCheckboxes = item.querySelectorAll('input[type="checkbox"]:checked');
             const correct = Array.from(correctCheckboxes).map(cb => parseInt(cb.value));
             if (correct.length === 0) {
-                errorMessages.push(`Question ${i+1} (Multiple Choice) has no correct answers selected.`);
+                errorMessages.push(`Question ${i + 1} (Multiple Choice) has no correct answers selected.`);
                 hasError = true;
             } else {
                 const result = validateAndExtractAnswers(item, i);
@@ -399,7 +399,7 @@ function saveQuiz() {
             const correctAnswerInputs = item.querySelectorAll('.correct_answer');
             const correctAnswers = Array.from(correctAnswerInputs).map(input => input.value.trim()).filter(answer => answer !== '');
             if (correctAnswers.length === 0) {
-                errorMessages.push(`Question ${i+1} (Open Ended) has no correct answers provided.`);
+                errorMessages.push(`Question ${i + 1} (Open Ended) has no correct answers provided.`);
                 hasError = true;
             } else {
                 const caseSensitiveCheckbox = item.querySelector('input[name="case_sensitive"]');
@@ -439,7 +439,11 @@ function saveQuiz() {
     const nm = myId + "-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
     quizData.nm = nm;
 
-    if (!tremola.trivia) tremola.trivia = { active: {}, closed: {} };
+    if (!tremola.trivia) tremola.trivia = {
+        active: {},
+        closed: {}
+    };
+
     tremola.trivia.active[nm] = {
         nm: nm,
         from: myId,
@@ -449,15 +453,46 @@ function saveQuiz() {
     };
     persist();
 
-    const quizMessage = {
-        type: 'trivia-quiz',
-        from: myId,
-        to: selectedContacts,
-        nm: nm,
-        quiz: quizData
-    };
+    const quizContent = JSON.stringify(quizData);
 
-    writeLogEntry(JSON.stringify(quizMessage));
+    for (const contactId of selectedContacts) {
+        let recipientPubKey;
+        if (contactId === myId) {
+            tremola.trivia.active[nm] = {
+                nm: nm,
+                from: myId,
+                quiz: quizData,
+                isOwn: true,
+                state: 'new',
+                selfSent: true
+            };
+            persist();
+            continue;
+        } else {
+            recipientPubKey = keyRing.get(contactId);
+        }
+        if (!recipientPubKey) {
+            console.error(`No public key found for ${contactId}`);
+            continue;
+        }
+
+        const sharedKey = await TriviaCrypto.deriveAES(
+            tremola.trivia.keys.private,
+            recipientPubKey
+        );
+
+        const encryptedContent = await TriviaCrypto.encrypt(quizContent, sharedKey);
+
+        const encryptedMessage = {
+            type: 'trivia-quiz',
+            from: myId,
+            to: [contactId],
+            nm: nm,
+            content: encryptedContent
+        };
+
+        writeLogEntry(JSON.stringify(encryptedMessage));
+    }
 
     setTriviaScenario('trivia-list');
 }

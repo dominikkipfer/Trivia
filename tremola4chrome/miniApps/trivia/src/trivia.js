@@ -38,24 +38,41 @@ const TriviaLogic = {
             switch (msg.type) {
                 case 'trivia-key':
                     if (msg.keys && Array.isArray(msg.keys)) {
-                        console.log("Received key key message!!!!" + JSON.stringify(msg.keys));
                         receivePublicKey(msg.keys);
                     }
                     break;
                 case 'trivia-quiz':
-                    if (msg.to && msg.to.includes(myId) && msg.quiz) {
+                    if (msg.to && msg.to.includes(myId)) {
                         const isOwnQuiz = msg.from === myId;
-                        const selfSent = isOwnQuiz && msg.to.includes(myId);
-                        tremola.trivia.active[msg.nm] = {
-                            nm: msg.nm,
-                            from: msg.from,
-                            quiz: msg.quiz,
-                            isOwn: isOwnQuiz,
-                            state: 'new',
-                            selfSent: selfSent
-                        };
-                        persist();
-                        if (TriviaScenario === 'trivia-list') TriviaUi.refresh();
+                        (async () => {
+                            try {
+                                const senderPubKey = keyRing.get(msg.from);
+                                if (!senderPubKey) {
+                                    return;
+                                }
+
+                                const sharedKey = await TriviaCrypto.deriveAES(
+                                    tremola.trivia.keys.private,
+                                    senderPubKey
+                                );
+
+                                const decrypted = await TriviaCrypto.decrypt(msg.content, sharedKey);
+                                if (decrypted) {
+                                    const quizData = JSON.parse(decrypted);
+                                    tremola.trivia.active[msg.nm] = {
+                                        nm: msg.nm,
+                                        from: msg.from,
+                                        quiz: quizData,
+                                        isOwn: isOwnQuiz,
+                                        state: 'new',
+                                    };
+                                    persist();
+                                    if (TriviaScenario === 'trivia-list') TriviaUi.refresh();
+                                }
+                            } catch (error) {
+                                console.error("Decryption failed: ", error);
+                            }
+                        })();
                     }
                     break;
                 default:

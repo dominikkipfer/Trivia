@@ -37,10 +37,9 @@ const TriviaLogic = {
 
             switch (msg.type) {
                 case 'trivia-key':
-                    if (msg.from && msg.pub) {
-                        const pubKey = TriviaCrypto.base64ToBuf(msg.pub);
-                        keyRing.set(msg.from, pubKey);
-                        persist();
+                    if (msg.keys && Array.isArray(msg.keys)) {
+                        console.log("Received key key message!!!!" + JSON.stringify(msg.keys));
+                        receivePublicKey(msg.keys);
                     }
                     break;
                 case 'trivia-quiz':

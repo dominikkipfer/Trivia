@@ -1,3 +1,5 @@
+const keyBroadcastTimers = new Map();
+
 (() => {
     const enc = new TextEncoder();
     const dec = new TextDecoder();
@@ -18,7 +20,6 @@
                 private: pair.privateKey
             };
         },
-
         async deriveAES(myPrivate, theirPub) {
             const theirKey = await crypto.subtle.importKey(
                 'raw', theirPub,
@@ -42,7 +43,6 @@
                 ['encrypt', 'decrypt']
             );
         },
-
         async encrypt(plain, aesKey) {
             const iv = crypto.getRandomValues(new Uint8Array(12));
             const cipherBuf = await crypto.subtle.encrypt(
@@ -58,7 +58,6 @@
             full.set(new Uint8Array(cipherBuf), iv.byteLength);
             return btoa(String.fromCharCode(...full));
         },
-
         async decrypt(b64, aesKey) {
             try {
                 const bytes = new Uint8Array(
@@ -79,7 +78,6 @@
                 return null;
             }
         },
-
         bufToBase64(buf) {
             return btoa(String.fromCharCode(...new Uint8Array(buf)));
         },
@@ -89,25 +87,108 @@
     };
 })();
 
-async function initializeTrivia() {
-    if (!tremola.trivia) {
-        tremola.trivia = {
-            active: {},
-            closed: {}
-        };
+function receivePublicKey(messageData) {
+    messageData.forEach(keyEntry => {
+        if (keyEntry.id && keyEntry.key && keyEntry.id !== myId) {
+            processKey(keyEntry.id, keyEntry.key);
+        }
+    });
+
+    if (!messageData.some(entry => entry.id === myId)) {
+        scheduleBroadcast();
+    } else {
+        clearBroadcastTimers();
     }
-    if (!tremola.trivia.keys) {
-        tremola.trivia.keys = await TriviaCrypto.generateKeyPair();
-        persist();
-        broadcastPublicKey();
+
+    return true;
+}
+
+function processKey(ownerId, publicKey) {
+    const existingKey = keyRing.get(ownerId);
+    const newKeyB64 = TriviaCrypto.base64ToBuf(publicKey);
+
+    let isKeyNew = true;
+    if (existingKey) {
+        isKeyNew = !compareKeys(existingKey, newKeyB64);
+    }
+
+    if (isKeyNew) {
+        keyRing.set(ownerId, newKeyB64);
     }
 }
 
+function compareKeys(buf1, buf2) {
+    if (buf1.byteLength !== buf2.byteLength) return false;
+
+    const dv1 = new Uint8Array(buf1);
+    const dv2 = new Uint8Array(buf2);
+
+    for (let i = 0; i < buf1.byteLength; i++) {
+        if (dv1[i] !== dv2[i]) return false;
+    }
+    return true;
+}
+
+function clearBroadcastTimers() {
+    for (const timerId of keyBroadcastTimers.values()) {
+        clearTimeout(timerId);
+    }
+    keyBroadcastTimers.clear();
+}
+
+function scheduleBroadcast() {
+    clearBroadcastTimers();
+
+    const allIds = new Set([...keyRing.keys(), myId]);
+    const sortedIds = Array.from(allIds).sort();
+    const myPosition = sortedIds.indexOf(myId);
+
+    const delay = (myPosition + 1) * 5000;
+    console.log(`Plane Broadcast in ${delay/1000} Sekunden (Position: ${myPosition + 1})`);
+
+    const timerId = setTimeout(() => {
+        broadcastPublicKey();
+    }, delay);
+
+    keyBroadcastTimers.set(myId, timerId);
+}
+
 function broadcastPublicKey() {
+    if (!tremola.trivia || !tremola.trivia.keys || !tremola.trivia.keys.pub) {
+        return;
+    }
+
+    clearBroadcastTimers();
+
+    const myPubKey = TriviaCrypto.bufToBase64(tremola.trivia.keys.pub);
+    if (!myPubKey) return;
+
+    const allKeys = [{ id: myId, key: myPubKey }];
+
+    for (const [id, keyBuffer] of keyRing.entries()) {
+        if (id !== myId) {
+            const keyBase64 = TriviaCrypto.bufToBase64(keyBuffer);
+            allKeys.push({ id, key: keyBase64 });
+        }
+    }
+
     const keyMsg = {
         type: 'trivia-key',
-        from: myId,
-        pub: TriviaCrypto.bufToBase64(tremola.trivia.keys.pub)
+        keys: allKeys,
+        timestamp: Date.now()
     };
-    writeLogEntry(JSON.stringify(keyMsg));
+
+    backend("customApp:writeEntry trivia " + JSON.stringify(keyMsg));
 }
+
+if (!tremola.trivia) {
+    tremola.trivia = { active: {}, closed: {} };
+}
+
+TriviaCrypto.generateKeyPair().then(keys => {
+    tremola.trivia.keys = keys;
+    persist();
+    setTimeout(() => {
+        broadcastPublicKey();
+    }, 5000);
+});

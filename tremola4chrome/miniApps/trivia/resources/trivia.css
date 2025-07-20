@@ -23,9 +23,7 @@
     position: absolute;
     bottom: 16px;
     display: flex;
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(1px) saturate(180%);
-    -webkit-backdrop-filter: blur(1px) saturate(180%);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 30px;
     padding: 3px 8px;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -34,6 +32,10 @@
     margin: 0 auto;
     overflow: visible;
     z-index: 99;
+    box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
+    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+    backdrop-filter: url(#frosted-glass-effect);
+    -webkit-backdrop-filter: blur(3px);
 }
 
 .question_type_tabs {
@@ -113,10 +115,12 @@
     align-items: center;
     justify-content: center;
     color: #000000;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.25);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(1px);
-    -webkit-backdrop-filter: blur(1px);
+    box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
+    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+    backdrop-filter: url(#frosted-glass-effect);
+    -webkit-backdrop-filter: blur(3px);
     cursor: pointer;
     z-index: 12;
     transition: transform 0.3s ease;
@@ -606,19 +610,6 @@ input[type="radio"] {
 
 .drop-below {
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .correct {
     color: green;

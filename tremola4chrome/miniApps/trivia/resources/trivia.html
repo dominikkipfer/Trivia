@@ -98,3 +98,10 @@
     <p id="results_subtitle" class="trivia_subtitle"></p>
     <div id="results_quiz_container" class="trivia_create_form"></div>
 </div>
+
+<svg style="display: none">
+    <filter id="frosted-glass-effect" primitiveUnits="userSpaceOnUse" filterUnits="objectBoundingBox" color-interpolation-filters="linearRGB">
+        <feDisplacementMap scale="40" x="0%" y="0%" xChannelSelector="R" yChannelSelector="B"  width="100%" height="100%" in="SourceGraphic" in2="SourceGraphic" result="displacementMap" />
+        <feGaussianBlur x="0%" y="0%" stdDeviation="3 3" width="100%" height="100%" in="displacementMap" result="blur" />
+    </filter>
+</svg>

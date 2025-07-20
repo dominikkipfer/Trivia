@@ -11,7 +11,7 @@
     "src/trivia_contacts.js",
     "src/trivia_solve.js",
     "src/trivia_ui.js",
-    "src/trivia_settings.js",
+    "src/trivia_results.js",
     "src/trivia_encryption.js"
   ],
   "htmlFile": "resources/trivia.html",
@@ -44,11 +44,18 @@
         "div:trivia-solve"
       ]
     },
-    "trivia-settings": {
+    "trivia-quiz-info": {
       "display": [
         "div:back",
         "core",
-        "div:trivia-settings"
+        "div:trivia-quiz-info"
+      ]
+    },
+    "trivia-results": {
+      "display": [
+        "div:back",
+        "core",
+        "div:trivia-results"
       ]
     }
   }

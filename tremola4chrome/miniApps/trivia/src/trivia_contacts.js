@@ -1,9 +1,8 @@
 const TriviaContacts = {
-    show()               { showContactSelection(); },
-    confirmSelection()   { confirmContactSelection(); },
-    cancelSelection()    { cancelContactSelection(); }
+    show() {
+        showContactSelection();
+    }
 };
-
 
 function showContactSelection () {
     tremola.trivia.previousScenario = TriviaScenario;

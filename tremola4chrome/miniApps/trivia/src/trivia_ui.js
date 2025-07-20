@@ -7,11 +7,11 @@ const TriviaUi = {
             setTriviaScenario('trivia-list');
         } else if (TriviaScenario === 'trivia-contacts') {
             setTriviaScenario(tremola.trivia.previousScenario || 'trivia-create');
+        } else if (TriviaScenario === 'trivia-results' && tremola.trivia.previousScenario === 'trivia-quiz-info') {
+            setTriviaScenario(tremola.trivia.previousScenario || 'trivia-list');
+        } else if (TriviaScenario === 'trivia-results' && tremola.trivia.previousScenario === 'trivia-solve') {
+            setTriviaScenario('trivia-list');
         } else if (TriviaScenario === 'trivia-list') {
-            const settingsButton = document.querySelector('.trivia_settings_button');
-            if (settingsButton) {
-                settingsButton.style.display = 'none';
-            }
             quitApp();
         }
     },
@@ -90,18 +90,16 @@ function setTriviaScenario(s) {
     const prevScenario = TriviaScenario;
     TriviaScenario = s;
 
-    const settingsButton = document.querySelector('.trivia_settings_button');
-    if (settingsButton) {
-        settingsButton.style.display = s.startsWith('trivia-') ? 'flex' : 'none';
-    }
-
     if (animationInProgress) {
         return;
     }
 
     if (s !== prevScenario) {
         if ((s !== 'trivia-list' && prevScenario === 'trivia-list') ||
-            (s === 'trivia-contacts' && prevScenario === 'trivia-create')) {
+            (s === 'trivia-contacts' && prevScenario === 'trivia-create') ||
+            (s === 'trivia-results' && prevScenario === 'trivia-solve') ||
+            (s === 'trivia-quiz-info' && prevScenario === 'trivia-list') ||
+            (s === 'trivia-results' && prevScenario === 'trivia-quiz-info')) {
             animationInProgress = true;
             const newElement = document.getElementById(`div:${s}`);
             const oldElement = document.getElementById(`div:${prevScenario}`);
@@ -132,7 +130,9 @@ function setTriviaScenario(s) {
                 animationInProgress = false;
             }, 500);
         } else if (s === 'trivia-list' && prevScenario && prevScenario !== 'trivia-list' ||
-            (s === 'trivia-create' && prevScenario === 'trivia-contacts')) {
+            (s === 'trivia-create' && prevScenario === 'trivia-contacts') ||
+            (s === 'trivia-solve' && prevScenario === 'trivia-results') ||
+            (s === 'trivia-quiz-info' && prevScenario === 'trivia-results')) {
             animationInProgress = true;
             const oldElement = document.getElementById(`div:${prevScenario}`);
             const newElement = document.getElementById(`div:${s}`);

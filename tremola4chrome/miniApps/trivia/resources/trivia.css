@@ -136,13 +136,6 @@
     font-size: 22px;
 }
 
-.trivia_settings_button {
-    display: none;
-    top: 3pt;
-    right: 45px;
-    z-index: 999;
-}
-
 .trivia_list_button {
     position: relative;
     height: auto;
@@ -163,6 +156,10 @@
     font-size: 1.5em;
     margin-bottom: 5px;
     color: #e2573b;
+}
+
+#div\:quiz_title, #div\:trivia_create_title, #div\:trivia_leaderboard_title, #div\:trivia_create_subtitle,
+#div\:trivia_tab_label, #div\:span {
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
@@ -221,12 +218,25 @@
     right: 0;
     text-align: center;
     z-index: 11;
-    margin: 0;
+    margin: 0 60px;
     padding: 10px 0;
     font-size: 1em;
 }
 
-#div\:trivia-contacts::before, #div\:trivia-create::before {
+.trivia_subtitle {
+    position: absolute;
+    top: 110px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 11;
+    margin: 0;
+    padding: 5px 0;
+    font-size: 0.7em;
+    opacity: 0.5;
+}
+
+#div\:trivia-contacts::before, #div\:trivia-create::before, #div\:trivia-solve::before, #div\:trivia-results::before {
     content: '';
     position: absolute;
     left: 0;
@@ -611,7 +621,9 @@ input[type="radio"] {
 #div\:trivia-list,
 #div\:trivia-create,
 #div\:trivia-solve,
-#div\:trivia-contacts {
+#div\:trivia-contacts,
+#div\:trivia-results,
+#div\:trivia-quiz-info {
     position: absolute;
     top: 0;
     left: 0;

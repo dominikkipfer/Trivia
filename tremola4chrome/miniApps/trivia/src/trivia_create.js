@@ -487,6 +487,7 @@ async function saveQuiz() {
         } else {
             recipientPubKey = keyRing.get(contactId);
         }
+
         if (!recipientPubKey) {
             console.error(`No public key found for ${contactId}`);
             continue;

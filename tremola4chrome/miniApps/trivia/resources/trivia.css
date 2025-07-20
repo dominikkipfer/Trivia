@@ -158,13 +158,17 @@
     color: #e2573b;
 }
 
-#div\:quiz_title, #div\:trivia_create_title, #div\:trivia_leaderboard_title, #div\:trivia_create_subtitle,
-#div\:trivia_tab_label, #div\:span {
+#div\:quiz_title, .trivia_create_subtitle,
+#div\:trivia_tab_label, #div\:span, .form_group label, .question_text, .quiz_questions, .quiz_info span {
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+.question_item h3, .answer_text, .solve_quiz_container h3 {
     word-break: break-word;
 }
 
@@ -221,6 +225,14 @@
     margin: 0 60px;
     padding: 10px 0;
     font-size: 1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    max-height: 1.2em;
+    word-break: break-word;
 }
 
 .trivia_subtitle {

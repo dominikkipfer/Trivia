@@ -29,7 +29,10 @@ const TriviaLogic = {
         let data = Array.isArray(raw) ? raw : JSON.parse(raw.content || raw);
         if (!Array.isArray(data)) return;
 
-        if (!tremola.trivia) tremola.trivia = { active: {}, closed: {} };
+        if (!tremola.trivia) tremola.trivia = {
+            active: {},
+            closed: {}
+        };
 
         data.forEach(item => {
             const msg = item.args ? item.args[0] : item;
@@ -59,6 +62,7 @@ const TriviaLogic = {
                                 const decrypted = await TriviaCrypto.decrypt(msg.content, sharedKey);
                                 if (decrypted) {
                                     const quizData = JSON.parse(decrypted);
+                                    console.log("Received quiz data:", quizData);
                                     tremola.trivia.active[msg.nm] = {
                                         nm: msg.nm,
                                         from: msg.from,
@@ -71,6 +75,37 @@ const TriviaLogic = {
                                 }
                             } catch (error) {
                                 console.error("Decryption failed: ", error);
+                            }
+                        })();
+                    }
+                    break;
+                case 'trivia-result':
+                    if (msg.to && msg.to.includes(myId)) {
+                        (async () => {
+                            try {
+                                const senderPubKey = keyRing.get(msg.from);
+                                if (!senderPubKey) {
+                                    console.error(`No public key for sender ${msg.from}`);
+                                    return;
+                                }
+
+                                const sharedKey = await TriviaCrypto.deriveAES(
+                                    tremola.trivia.keys.private,
+                                    senderPubKey
+                                );
+
+                                const decrypted = await TriviaCrypto.decrypt(msg.content, sharedKey);
+                                if (decrypted) {
+                                    const resultData = JSON.parse(decrypted);
+                                    if (tremola.trivia.active[msg.nm]) {
+                                        tremola.trivia.active[msg.nm].results = tremola.trivia.active[msg.nm].results || {};
+                                        tremola.trivia.active[msg.nm].results[msg.from] = resultData;
+                                        persist();
+                                        if (TriviaScenario === 'trivia-list') TriviaUi.refresh();
+                                    }
+                                }
+                            } catch (error) {
+                                console.error("Decryption failed:", error);
                             }
                         })();
                     }

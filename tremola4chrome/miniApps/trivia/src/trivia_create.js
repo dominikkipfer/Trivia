@@ -202,8 +202,7 @@ function generateOpenEndedDetails(questionCount, existingAnswers = []) {
             </button>
             <input type="text" class="correct_answer form_input" placeholder="Correct Answer ${index + 1}" value="${answer}">
         </div>
-    `).join('')
-        : `
+    `).join('') : `
         <div class="form_group answer_group">
             <button type="button" class="remove_answer spotlight">
                 <img src="../miniApps/trivia/assets/minus.svg" class="trivia_button_icon_small" alt="-" />
@@ -213,24 +212,24 @@ function generateOpenEndedDetails(questionCount, existingAnswers = []) {
     `;
 
     return `
-    <div class="correct_answers_container" data-type="open_ended">
-        ${answersHtml}
-        <button type="button" class="add_answer spotlight">
-            <img src="../miniApps/trivia/assets/plus.svg" class="trivia_button_icon_small" alt="-" />
-        </button>
-    </div>
-    <div class="form_group">
-        <label>Options:</label>
-        <div>
-            <input type="checkbox" name="case_sensitive" id="case_sensitive_${questionCount}">
-            <label for="case_sensitive_${questionCount}">Case Sensitive</label>
+        <div class="correct_answers_container" data-type="open_ended">
+            ${answersHtml}
+            <button type="button" class="add_answer spotlight">
+                <img src="../miniApps/trivia/assets/plus.svg" class="trivia_button_icon_small" alt="-" />
+            </button>
         </div>
-        <div>
-            <input type="checkbox" name="numbers_only" id="numbers_only_${questionCount}">
-            <label for="numbers_only_${questionCount}">Numbers Only</label>
+        <div class="form_group">
+            <label>Options:</label>
+            <div>
+                <input type="checkbox" name="case_sensitive" id="case_sensitive_${questionCount}">
+                <label for="case_sensitive_${questionCount}">Case Sensitive</label>
+            </div>
+            <div>
+                <input type="checkbox" name="numbers_only" id="numbers_only_${questionCount}">
+                <label for="numbers_only_${questionCount}">Numbers Only</label>
+            </div>
         </div>
-    </div>
-`;
+    `;
 }
 
 function attachOpenEndedListeners(detailsDiv) {
@@ -329,7 +328,8 @@ async function saveQuiz() {
     const description = document.getElementById('quiz_description').value.trim();
     const questionItems = document.getElementsByClassName('question_item');
     const contactsContainer = document.getElementById('quiz_contacts_container');
-    const selectedContacts = Array.from(contactsContainer.children).map(el => el.dataset.contactId).filter(id => id && id !== 'undefined');
+    const selectedContacts = Array.from(contactsContainer.children)
+        .map(el => el.dataset.contactId).filter(id => id && id !== 'undefined');
 
     let hasError = false;
     let errorMessages = [];
@@ -345,6 +345,7 @@ async function saveQuiz() {
     }
 
     let questions = [];
+    let solutions = [];
     for (let i = 0; i < questionItems.length; i++) {
         const item = questionItems[i];
         const questionText = item.querySelector('.question_text').value.trim();
@@ -370,9 +371,9 @@ async function saveQuiz() {
                     questions.push({
                         type: 'single_choice',
                         question: questionText,
-                        answers: result.answers,
-                        correct: correct
+                        answers: result.answers
                     });
+                    solutions.push({ correct: correct });
                 }
             }
         } else if (questionType === 'multiple_choice') {
@@ -390,9 +391,9 @@ async function saveQuiz() {
                     questions.push({
                         type: 'multiple_choice',
                         question: questionText,
-                        answers: result.answers,
-                        correct: correct
+                        answers: result.answers
                     });
+                    solutions.push({ correct: correct });
                 }
             }
         } else if (questionType === 'open_ended') {
@@ -408,7 +409,9 @@ async function saveQuiz() {
                 const numbersOnly = numbersOnlyCheckbox ? numbersOnlyCheckbox.checked : false;
                 questions.push({
                     type: 'open_ended',
-                    question: questionText,
+                    question: questionText
+                });
+                solutions.push({
                     correctAnswers: correctAnswers,
                     options: {
                         caseSensitive: caseSensitive,
@@ -429,10 +432,23 @@ async function saveQuiz() {
         return;
     }
 
+    const solutionKey = await crypto.subtle.generateKey(
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['encrypt', 'decrypt']
+    );
+
+    const solutionKeyExported = await crypto.subtle.exportKey('raw', solutionKey);
+    const solutionKeyBase64 = TriviaCrypto.bufToBase64(solutionKeyExported);
+    const solutionsJson = JSON.stringify(solutions);
+    const encryptedSolutions = await TriviaCrypto.encrypt(solutionsJson, solutionKey);
+
     const quizData = {
         title: title,
         description: description,
         questions: questions,
+        encryptedSolutions: encryptedSolutions,
+        solutionKey: solutionKeyBase64,
         created: new Date().toISOString()
     };
 

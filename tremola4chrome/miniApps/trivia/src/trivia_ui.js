@@ -53,7 +53,7 @@ const TriviaUi = {
                             <div class="quiz_item">
                                 <div class="quiz_title">${q.quiz.title || 'No Title'}</div>
                                 <div class="quiz_questions">
-                                    <span>${questions.length} Question</span>
+                                    <span>${questions.length} Question${questions.length > 1 ? 's' : ''}</span>
                                 </div>
                                 <div class="quiz_info">
                                     ${!isCreated ? `

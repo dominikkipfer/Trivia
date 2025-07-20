@@ -598,7 +598,15 @@ input[type="radio"] {
 
 
 
+.correct {
+    color: green;
+    font-weight: bold;
+}
 
+.incorrect {
+    color: red;
+    font-weight: bold;
+}
 
 #div\:trivia-list,
 #div\:trivia-create,
